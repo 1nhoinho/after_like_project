@@ -13,7 +13,7 @@ from jose import jwt
 import model
 
 
-from model import t_login, t_member,UserCreate
+from model import t_login, t_member
 from database import engine
 
 model.Base.metadata.create_all(bind=engine)
@@ -148,7 +148,7 @@ async def add_login(info: dict) : # 가입정보를 딕셔너리 형태로 받�
         
         print("로그인완료")
         return { "isAuthenticated" : True }
-    
+ 
 ###################################################################################################
 
 
@@ -158,40 +158,28 @@ async def add_login(info: dict) : # 가입정보를 딕셔너리 형태로 받�
 
 
 
-@app.post("/login/easy-auth/sign-up")
-async def add_signin(info: dict) -> dict:
-    infos.append(info)
-    a = info["email"]
+# @app.post("/login/easy-auth/sign-up")
+# async def add_signin(info: dict) -> dict:
+#     infos.append(info)
     
-    user = session.query(t_login).filter((t_login.mb_email == info["email"])).first() ## 단일 사용자
+#     user = session.query(t_login).filter((t_login.mb_email == info["email"])).first() ## 단일 사용자
  
 
-    if user:
-        print("아이디가 중복입니다.")
-        return { "repeat" :False }
+#     if user:
+#         print("아이디가 중복입니다.")
+#         return { "repeat" :False }
     
-    else:
-        print("아이디가 만들어졌습니다")
-        uname = t_login()
-        uname.mb_name = info["nickname"]
-        uname.mb_email = info["email"]
-        uname.mb_pw = info["password"]
-        uname.mb_pw = pwd_context.hash(uname.mb_pw)
+#     else:
+#         print("아이디가 만들어졌습니다")
+#         uname = t_login()
+#         uname.mb_name = info["nickname"]
+#         uname.mb_email = info["email"]
+#         uname.mb_pw = info["password"]
+#         uname.mb_pw = pwd_context.hash(uname.mb_pw)
         
-        session.add(uname)
-        session.commit()
-        return {"isReady": True, "repeat": True}
-
-@app.get("/login/easy-auth/sign-up")
-async def 성공() -> dict:
-    # await add_signin()
-    user = session.query(t_login).all() ## 단일 사용자
-    # data ={"1":1}
-    
-    # return user, data
-    return user
-    
-
+#         session.add(uname)
+#         session.commit()
+#         return {"isReady": True, "repeat": True}
 
 
 ##############################################################################################################################
@@ -242,17 +230,17 @@ async def add_ui(info: dict) -> dict:
 #####데이터 저장##################################################################
     member = t_member()
     member.mb_gender = info["gender"] # 성별
-    member.mb_birthdate = info["birth"]# 생일
-    member.mb_height =  info["height"]#  키  
+    # member.mb_birthdate = info["birth"]# 생일
+    # member.mb_height =  info["height"]#  키  
     member.mb_weight =  info["weight"]#  몸무게  
     member.mb_region = info["region"] # 지역
-    member.mb_region_more =regionInfo # 지역상세
+    # member.mb_region_more =regionInfo # 지역상세
     # member.mb_blood = info["blood"]# 혈액형               DB안넣음
     member.mb_drinking_yn = info["alcohol"] # 음주
     # member.mb_smoking_yn = info["smoke"] # 흡연
     member.mb_religion = info["religion"]### 종교   DB확인
     member.mb_job = info["job"]### 직업           
-    member.mb_academic = info["education"] #학력
+    # member.mb_academic = info["education"] #학력
     # member.mb_salary = info["salary"]# 연봉
     # member.mb_asset= info["asset"] # 재산
     member.mb_car= info["vehicle"] # 차소유
@@ -263,10 +251,10 @@ async def add_ui(info: dict) -> dict:
     return { "data": infos}
 ##############################################################################
 ######데이터 디비 뱉기#########################################################
-@app.post("/user-setting/3")#//1<<<<<<<<<<<<<<<넣어야 찾아짐???왜그럼?
+@app.post("/user/5")#//1<<<<<<<<<<<<<<<넣어야 찾아짐???왜그럼?
 async def read_add(info: dict) -> dict:
     infos.append(info)
-    user = session.query(t_member).filter((t_member.mb_no == "3")).first()
+    user = session.query(t_member).filter((t_member.mb_no == "5")).first()
     gender = 성별()
     region = 지역()
     regionuser = 지역상세()
@@ -280,7 +268,7 @@ async def read_add(info: dict) -> dict:
     print(user.mb_height)
     print(user.mb_weight)
     print(region[user.mb_region])
-    print(regionuser[user.mb_region_more])
+    # print(regionuser[user.mb_region_more])
     print(alcohol[user.mb_drinking_yn])
     # print(somke[user.mb_smoking_yn])
     print(religion[user.mb_religion])
@@ -295,7 +283,30 @@ async def read_add(info: dict) -> dict:
     
     return { "data": "하하하"}
 #######################################################################################
+############# 인호 회원가입#################
+@app.post("/login/easy-auth/sign-up")
+async def login_user(info: dict) -> dict:
 
+    infos.append(info)
+    mb = t_member()
+    lg = t_login()
+    lg.mb_name = info["nickname"]
+    lg.mb_email = info["email"]
+    lg.mb_pw = info["password"]
+    lg.mb_pw = pwd_context.hash(lg.mb_pw)
+
+    session.add(lg)
+    session.commit()
+
+    mb.mb_no = lg.mb_no
+
+    session.add(mb)
+    session.commit()
+
+    member = session.query(t_login.mb_no).filter(
+        t_login.mb_no == mb.mb_no).first()
+    return {"isReady": True, "repeat": True, "mb_no" :mb.mb_no}
+###########################################################################################################
 
 
 

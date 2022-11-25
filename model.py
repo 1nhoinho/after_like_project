@@ -18,9 +18,9 @@ class t_login(Base):
 
 class t_member(Base):
     __tablename__ = "t_member"
-    # mb_no= Column(Integer, ForeignKey('t_login.mb_no'), autoincrement=True, primary_key=True)
-    # t_login = relationship("t_login", backref="t_member")
-    mb_no= Column(Integer, primary_key=True)
+    mb_no= Column(Integer, ForeignKey('t_login.mb_no'),  primary_key=True)
+    t_login = relationship("t_login", backref="t_member")
+    # mb_no= Column(Integer, primary_key=True)
     mb_gender = Column(String(255),nullable=True)
     mb_region = Column(String(255), nullable=True)
     mb_region_more =Column(String(255), nullable=True)
