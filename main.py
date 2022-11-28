@@ -110,9 +110,9 @@ async def create_member(info: dict) -> dict:
     mb_data.append(info)
     member = t_member()
     login = session.query(t_login).filter(
-        t_login.mb_email == info["mail"]).first()
+        t_login.mb_email == info["email"]).first()
     update = session.query(t_member).filter(
-        t_member.mb_no == login.mb_no).first()
+        t_member.mb_no == t_login.mb_no).first()
 
     # 성별
     update.mb_gender = info["gender"]
@@ -139,7 +139,7 @@ async def create_member(info: dict) -> dict:
 
     session.add(update)
     session.commit()
-
+    print(info["email"])
     return print(f" 정보가 생성되었습니다.")
 
 

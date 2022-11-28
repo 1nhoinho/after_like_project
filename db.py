@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 #db_host = "localhost"
 #db_name = "test"
 
-DATABASE = "mysql+pymysql://root:123457@localhost/test?charset=utf8mb4"
+DATABASE = "mysql+pymysql://root:1234@localhost/inho?charset=utf8mb4"
 
 
 ENGINE = create_engine(
