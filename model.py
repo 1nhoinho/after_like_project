@@ -89,7 +89,7 @@ class t_user(Base):
     __tablename__ = 't_user_data'
     mb_no = Column(Integer, primary_key=True, autoincrement=True)
     mb_email = Column(String(45), ForeignKey(
-        "t_logins.mb_email"), nullable=False)
+        "t_login.mb_email"), nullable=False)
     mb_nickname = Column(String(45), nullable=True)
     mb_gender = Column(String(2), nullable=True)
     mb_region = Column(String(30), nullable=True)
@@ -172,7 +172,7 @@ class user(BaseModel):
 
 # 로그인 테이블
 class t_login(Base):
-    __tablename__ = 't_logins'
+    __tablename__ = 't_login'
     mb_no = Column(Integer, primary_key=True, autoincrement=True)
     mb_email = Column(String(45), nullable=False, unique=True)
     mb_pw = Column(String(300), nullable=False)
@@ -180,12 +180,22 @@ class t_login(Base):
     # member = relationship("t_member", back_populates="login")
     email = relationship("t_user", back_populates="mail")
 
-
 # 로그인 테이블 속성
+
+
 class login(BaseModel):
     mb_no = int
     mb_email = str
     mb_pw = str
+
+# 이미지 테이블 생성
+
+
+class t_image(Base):
+    __tablename__ = "t_image"
+
+    mb_no = Column(Integer, primary_key=True)
+    mb_image = Column(String(1000), nullable=False)
 
 
 def main():
