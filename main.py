@@ -89,13 +89,12 @@ async def add_login(info: dict):  # 가입정보를 딕셔너리 형태로 받�
 
     user = session.query(t_login).filter(
         t_login.mb_email == info["email"]).first()  # 단일 사용자
-    email = t_login.mb_email
     if not user or not pwd_context.verify(password, user.mb_pw):
         print("비밀번호나 아이디가 틀렸습니다.")
         return {"isAuthenticated": False}
     else:
         print("로그인완료")
-        return {"isAuthenticated": True, "email": email}
+        return {"isAuthenticated": True, "email": info["email"]}
 
 
 # ------------------------상세정보 입력----------------------------------------------
