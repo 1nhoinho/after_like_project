@@ -89,13 +89,13 @@ async def add_login(info: dict):  # 가입정보를 딕셔너리 형태로 받�
 
     user = session.query(t_login).filter(
         t_login.mb_email == info["email"]).first()  # 단일 사용자
-
+    email = t_login.mb_email
     if not user or not pwd_context.verify(password, user.mb_pw):
         print("비밀번호나 아이디가 틀렸습니다.")
         return {"isAuthenticated": False}
     else:
         print("로그인완료")
-        return {"isAuthenticated": True}
+        return {"isAuthenticated": True, "email": email}
 
 
 # ------------------------상세정보 입력----------------------------------------------
@@ -150,26 +150,22 @@ async def create_member(info: dict) -> dict:
         print("ㅋㅋ")
 
 
-# @app.put("/users")
-# # users=[{"id": 1, "name": "이름1", "age": 16},{"id": 2, "name": "이름2", "age": 20}]
-# async def user1_users(users: List[User]):
+# --------------상호추천 알고리즘 적용, 추출 ---------------------------------------------
 
-#     for i in users:
-#         user = session.query(t_member).filter(
-#             t_member.user_no == i.user_no).first()
-#         user.user_id = i.user_id
-#         user.user_pw = i.user_pw
-#         user.user_age = i.user_age
-#         session.commit()
+@app.post("/recommend")
+async def create_member(info: dict) -> dict:
+    return {'data': 'ㅋㅋ'}
 
-#     return f"{i.user_pw} 정보 변경이 완료 되었습니다."
+    # @app.put("/users")
+    # # users=[{"id": 1, "name": "이름1", "age": 16},{"id": 2, "name": "이름2", "age": 20}]
+    # async def user1_users(users: List[User]):
 
+    #     for i in users:
+    #         user = session.query(t_member).filter(
+    #             t_member.user_no == i.user_no).first()
+    #         user.user_id = i.user_id
+    #         user.user_pw = i.user_pw
+    #         user.user_age = i.user_age
+    #         session.commit()
 
-# @app.delete("/user")
-# async def delete_users(user_id: str):
-
-#     user = session.query(t_member).filter(
-#         t_member.user_id == user_id).delete()
-#     session.commit()
-
-#     return f"삭제가 완료되었습니다."
+    #     return f"{i.user_pw} 정보 변경이 완료 되었습니다."
