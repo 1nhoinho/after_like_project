@@ -112,8 +112,8 @@ async def create_member(info: dict) -> dict:
     user1 = session.query(t_login).filter(
         (t_login.mb_email == info["email"])).first()
     user_no = user1.mb_no
-    user2 = session.query(t_user).filter(
-        (t_user.mb_no == user_no)).first()
+    user2 = session.query(t_member).filter(
+        (t_member.mb_no == user_no)).first()
     print(user2)
     if user2:
         print(user2)
@@ -140,6 +140,17 @@ async def create_member(info: dict) -> dict:
         user2.mb_drink_yn = info["alcohol"]
         # 흡연여부
         user2.mb_smoke_yn = info["smoke"]
+        # 외모
+        if '0' in info["manAppearance"]:
+            sty = list(info["manAppearance"].values())
+            style = ','.join(i for i in sty)
+            user2.mb_style = style
+        else:
+            sty = list(info["womanAppearance"].values())
+            style = ','.join(i for i in sty)
+            user2.mb_style = style
+        # 성격
+
         # 가입 시간
         user2.mb_joindate = time.localtime()
         # 업데이트 시간
@@ -149,8 +160,9 @@ async def create_member(info: dict) -> dict:
 
         session.add(user2)
         session.commit()
-        print(datetime.today().year)
+        style = list(info["manAppearance"].values())
         return {"isCompleted": True}
+
     else:
         print("ㅋㅋ")
 
