@@ -71,13 +71,13 @@ async def create_user(info: dict) -> dict:
         session.add(lg)
         session.commit()
 
-        us.mb_email = lg.mb_email
+        mb.mb_email = lg.mb_email
 
-        session.add(us)
+        session.add(mb)
         session.commit()
 
         member = session.query(t_login).filter(
-            t_login.mb_no == us.mb_no).first()
+            t_login.mb_no == mb.mb_no).first()
         print("아이디가 만들어졌습니다")
         print(us.mb_no)
         email = lg.mb_email
