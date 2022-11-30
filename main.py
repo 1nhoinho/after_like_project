@@ -1,14 +1,20 @@
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
-from fastapi import FastAPI
+from fastapi import FastAPI, File
 from typing import List
 from starlette.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 
 from db import session
-from model import t_member, t_login, t_user
+from model import t_member, t_login, t_user, t_image
 import jwt
 import time
 from datetime import datetime
+
+import io
+import uuid
+import boto3
+import base64
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -65,7 +71,7 @@ async def create_user(info: dict) -> dict:
         session.add(lg)
         session.commit()
 
-        us.mb_no = lg.mb_no
+        us.mb_email = lg.mb_email
 
         session.add(us)
         session.commit()
@@ -153,18 +159,54 @@ async def create_member(info: dict) -> dict:
 
 @app.post("/recommend")
 async def create_member(info: dict) -> dict:
+    info["email"] = info["email"].replace('"', '', 2)
+    print(info["email"])
+    user = session.query(t_login).filter(
+        (t_login.mb_email == info["email"])).first()
+    user_no = user.mb_no
+    user_email = user.mb_email
+    print(user_no)
     return {'data': 'ㅋㅋ'}
 
-    # @app.put("/users")
-    # # users=[{"id": 1, "name": "이름1", "age": 16},{"id": 2, "name": "이름2", "age": 20}]
-    # async def user1_users(users: List[User]):
+# -------------이미지 s3 저장 및 웹으로 보내기 -------------------------------
 
-    #     for i in users:
-    #         user = session.query(t_member).filter(
-    #             t_member.user_no == i.user_no).first()
-    #         user.user_id = i.user_id
-    #         user.user_pw = i.user_pw
-    #         user.user_age = i.user_age
-    #         session.commit()
 
-    #     return f"{i.user_pw} 정보 변경이 완료 되었습니다."
+@app.put("/user-data-input/user-image-input")
+async def create_file(userImage: bytes = File(...)):
+   ###### 지우지마####
+    print(len(userImage))  # 길이 확인할려고~
+    userImage2 = str(userImage)  # 스트링으로 바꿔야 인식함
+    userimage = userImage2[24:]  # data:image/bmp;base64< 이거 없애야 디코딩됨
+
+    imgdata = base64.b64decode(userimage)  # 디코딩 하자
+    # image =Image.open(io.BytesIO(imgdata)) # 이미지 오픈
+    # image.show()#이미지보기
+    file = io.BytesIO(imgdata)  # 디코딩 이미지 파일로 만들기
+    file.name = "123.png"  # 파일에 이름줘야함 {}<<이거써서 이메일같은거 넣으면될듯
+
+    url = uuid.uuid1().hex  # 유니크한 네임 줘야함
+
+    s3_client = boto3.client(  # aws 접속코드
+        service_name="s3",
+        region_name="ap-northeast-2",
+        aws_access_key_id="AKIAW3XAAHKCN3ZSO6LT",
+        aws_secret_access_key="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"
+    )
+
+    s3_client.upload_fileobj(  # aws업로드
+        file,
+        "notfound-404",  # 버킷이름
+        url,  # 여기에 주소결정
+        ExtraArgs={
+            "ContentType": "public-read"
+        }
+    )
+
+    image_url = url  # 업로드된 이미지의 url이 설정값으로 저장됨
+    timage = t_image()  # 이미지 주소 디비 저장
+    timage.mb_image = image_url
+    session.add(timage)
+    session.commit()
+    print(image_url)
+
+    return {"True"}
