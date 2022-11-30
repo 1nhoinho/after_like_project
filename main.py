@@ -1,12 +1,14 @@
-
+from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
 from fastapi import FastAPI
 from typing import List
 from starlette.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 
 from db import session
-from model import t_member, t_login
+from model import t_member, t_login, t_user
 import jwt
+import time
+from datetime import datetime
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -31,7 +33,6 @@ app.add_middleware(
 )
 
 # ----------API 정의------------
-
 mb_data = []
 
 
@@ -54,6 +55,7 @@ async def create_user(info: dict) -> dict:
 
         login.append(info)
         mb = t_member()
+        us = t_user()
         lg = t_login()
         # lg.mb_name = info["nickname"]
         lg.mb_email = info["email"]
@@ -63,15 +65,15 @@ async def create_user(info: dict) -> dict:
         session.add(lg)
         session.commit()
 
-        mb.mb_no = lg.mb_no
+        us.mb_no = lg.mb_no
 
-        session.add(mb)
+        session.add(us)
         session.commit()
 
         member = session.query(t_login).filter(
-            t_login.mb_no == mb.mb_no).first()
+            t_login.mb_no == us.mb_no).first()
         print("아이디가 만들어졌습니다")
-        print(mb.mb_no)
+        print(us.mb_no)
         email = lg.mb_email
         print(email)
         return {"isReady": True, "email": email}
@@ -97,55 +99,60 @@ async def add_login(info: dict):  # 가입정보를 딕셔너리 형태로 받�
 
 
 # ------------------------상세정보 입력----------------------------------------------
-region = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-          'i', 'j', 'k', 'l', 'n', 'm', 'o', 'p', 'q', 'z']
-region_more = ["region_kangwon", "region_gyungki", "region_chungnam", "region_chungbuk", "region_gwangju", "region_daegu", "region_daejeon",
-               "region_busan", "region_seoul", "region_ulsan", "region_incheon", "region_jeonnam", "region_jeju", "region_jeonbuk", "region_hungnam",
-               "region_chungbuk", "region_foreign", "region_sejong"]
-
-
 @app.put("/user-data-input")
 async def create_member(info: dict) -> dict:
 
     mb_data.append(info)
-    member = t_member()
-    login = session.query(t_login).filter(
-        t_login.mb_email == info["mail"]).first()
-    update = session.query(t_member).filter(
-        t_member.mb_no == login.mb_no).first()
+    info["email"] = info["email"].replace('"', '', 2)
+    user1 = session.query(t_login).filter(
+        (t_login.mb_email == info["email"])).first()
+    user_no = user1.mb_no
+    user2 = session.query(t_user).filter(
+        (t_user.mb_no == user_no)).first()
+    print(user2)
+    if user2:
+        print(user2)
+        # 성별
+        user2.mb_gender = info["gender"]
+        # 생년
 
-    # 성별
-    update.mb_gender = info["gender"]
-    # 생년
-    update.mb_birthdate = info["birth"]
-    # 지역
-    update.mb_region = info["region"]
-    # 지역상세
-    update.mb_region = info["detailRegion"]
-    # 결혼유무
-    update.mb_marriage_yn = info["married"]
-    # 재산
-    update.mb_region = info["asset"]
-    # 닉네임
-    update.mb_nickname = info["nickname"]
-    # 몸무게
-    update.mb_weight = info["weight"]
-    # 키
-    update.mb_height = info["height"]
-    # 음주여부
-    update.mb_drink_yn = info["alcohol"]
-    # 흡연여부
-    update.mb_smoke_yn = info["smoke"]
+        user2.mb_birthdate = info["birth"][0:4]
+        # 지역
+        user2.mb_region = info["region"]
+        # 지역상세
+        user2.mb_region = info["detailRegion"]
+        # 결혼유무
+        user2.mb_marriage_yn = info["married"]
+        # 재산
+        user2.mb_region = info["asset"]
+        # 닉네임
+        user2.mb_nickname = info["nickname"]
+        # 몸무게
+        user2.mb_weight = info["weight"]
+        # 키
+        user2.mb_height = info["height"]
+        # 음주여부
+        user2.mb_drink_yn = info["alcohol"]
+        # 흡연여부
+        user2.mb_smoke_yn = info["smoke"]
+        # 가입 시간
+        user2.mb_joindate = time.localtime()
+        # 업데이트 시간
+        user2.mb_info_update = time.localtime()
+        # 나이
+        user2.mb_age = datetime.today().year - int(info["birth"][0:4]) + 1
 
-    session.add(update)
-    session.commit()
-
-    return print(f" 정보가 생성되었습니다.")
+        session.add(user2)
+        session.commit()
+        print(datetime.today().year)
+        return {"isCompleted": True}
+    else:
+        print("ㅋㅋ")
 
 
 # @app.put("/users")
 # # users=[{"id": 1, "name": "이름1", "age": 16},{"id": 2, "name": "이름2", "age": 20}]
-# async def update_users(users: List[User]):
+# async def user1_users(users: List[User]):
 
 #     for i in users:
 #         user = session.query(t_member).filter(
