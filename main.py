@@ -54,7 +54,7 @@ async def create_user(info: dict) -> dict:
 
     if user:
         print("아이디가 중복입니다.")
-        print(member)
+
         return {"repeat": False}
 
     else:
@@ -71,6 +71,7 @@ async def create_user(info: dict) -> dict:
         session.add(lg)
         session.commit()
 
+        mb.mb_no = lg.mb_no
         mb.mb_email = lg.mb_email
 
         session.add(mb)
@@ -79,7 +80,7 @@ async def create_user(info: dict) -> dict:
         member = session.query(t_login).filter(
             t_login.mb_no == mb.mb_no).first()
         print("아이디가 만들어졌습니다")
-        print(us.mb_no)
+        print(mb.mb_no)
         email = lg.mb_email
         print(email)
         return {"isReady": True, "email": email}
@@ -125,11 +126,11 @@ async def create_member(info: dict) -> dict:
         # 지역
         user2.mb_region = info["region"]
         # 지역상세
-        user2.mb_region = info["detailRegion"]
+        user2.mb_region_more = info["detailRegion"]
         # 결혼유무
         user2.mb_marriage_yn = info["married"]
-        # 재산
-        user2.mb_region = info["asset"]
+        # 결혼 계획
+        user2.mb_marriage_plan = info["marriagePlan"]
         # 닉네임
         user2.mb_nickname = info["nickname"]
         # 몸무게
@@ -141,16 +142,46 @@ async def create_member(info: dict) -> dict:
         # 흡연여부
         user2.mb_smoke_yn = info["smoke"]
         # 외모
-        if '0' in info["manAppearance"]:
-            sty = list(info["manAppearance"].values())
-            style = ','.join(i for i in sty)
+        if info["gender"] == 'f':
+            sty = list(info["womanAppearance"].values())
+            style = sty[0]
             user2.mb_style = style
         else:
-            sty = list(info["womanAppearance"].values())
-            style = ','.join(i for i in sty)
+            sty = list(info["manAppearance"].values())
+            style = sty[0]
             user2.mb_style = style
         # 성격
-
+        if info["gender"] == 'f':
+            cha = list(info["womanPersonality"].values())
+            character = ','.join(i for i in cha)
+            user2.mb_character = character
+        else:
+            cha = list(info["manPersonality"].values())
+            character = ','.join(i for i in cha)
+            user2.mb_character = character
+        # 패션스타일
+        if info["gender"] == 'f':
+            fas = list(info["womanFashion"].values())
+            fashion = ','.join(i for i in fas)
+            user2.mb_fashion = fashion
+        else:
+            fas = list(info["manFashion"].values())
+            fashion = ','.join(i for i in fas)
+            user2.mb_fashion = fashion
+        # 직업
+        user2.mb_job = info["job"]
+        # 직업 상세
+        user2.mb_job_more = info["jobInfo"]
+        # 종교
+        user2.mb_religion = info["religion"]
+        # 학력
+        user2.mb_academic = info["education"]
+        # 재산
+        user2.mb_asset = info["asset"]
+        # 연봉
+        user2.mb_salary = info["salary"]
+        # 차량
+        user2.mb_car = info["vehicle"]
         # 가입 시간
         user2.mb_joindate = time.localtime()
         # 업데이트 시간

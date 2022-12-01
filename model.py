@@ -13,17 +13,17 @@ class t_member(Base):
     mb_no = Column(Integer, primary_key=True, autoincrement=True)
     mb_email = Column(String(45), ForeignKey(
         "t_logins.mb_email"), nullable=False)
-    mb_nickname = Column(String(45), nullable=True)
-    mb_gender = Column(String(45), nullable=True)
-    mb_region = Column(String(45), nullable=True)
-    mb_region_more = Column(String(45), nullable=True)
-    mb_birthdate = Column(String(45), nullable=True)
-    mb_marriage_yn = Column(String(45), nullable=True)
-    mb_photo_yn = Column(String(45), nullable=True)
-    mb_photo_cnt = Column(String(45), nullable=True)
-    mb_profile = Column(String(500), nullable=True)
-    mb_job = Column(String(45), nullable=True)
-    mb_job_more = Column(String(45), nullable=True)
+    mb_nickname = Column(String(45), nullable=False)
+    mb_gender = Column(String(45), nullable=False)
+    mb_region = Column(String(45), nullable=False)
+    mb_region_more = Column(String(45), nullable=False)
+    mb_birthdate = Column(String(45), nullable=False)
+    mb_marriage_yn = Column(String(45), nullable=False)
+    mb_photo_yn = Column(String(45), nullable=False)
+    mb_photo_cnt = Column(String(45), nullable=False)
+    mb_profile = Column(String(500), nullable=False)
+    mb_job = Column(String(45), nullable=False)
+    mb_job_more = Column(String(45), nullable=False)
     mb_salary = Column(String(45), nullable=True)
     mb_height = Column(String(45), nullable=True)
     mb_weight = Column(String(45), nullable=True)
@@ -45,7 +45,7 @@ class t_member(Base):
     mb_age = Column(String(45), nullable=True)
 
     # login = relationship("t_login", back_populates="member", uselist=False)
-    # mail = relationship("t_login", back_populates="email")
+    mail = relationship("t_login", back_populates="email")
 
 
 # test 멤버 테이블 속성
@@ -88,8 +88,8 @@ class member(BaseModel):
 class t_user(Base):
     __tablename__ = 't_user_data'
     mb_no = Column(Integer, primary_key=True, autoincrement=True)
-    mb_email = Column(String(45), ForeignKey(
-        "t_login.mb_email"), nullable=False)
+    # mb_email = Column(String(45), ForeignKey(
+    #     "t_login.mb_email"), nullable=False)
     mb_nickname = Column(String(45), nullable=True)
     mb_gender = Column(String(2), nullable=True)
     mb_region = Column(String(30), nullable=True)
@@ -126,7 +126,7 @@ class t_user(Base):
     mb_profile_up = Column(String(45), nullable=True)
     mb_family_up = Column(String(45), nullable=True)
 
-    mail = relationship("t_login", back_populates="email")
+    # mail = relationship("t_login", back_populates="email")
 
 
 # 유저 데이터 30000개 속성
@@ -172,13 +172,13 @@ class user(BaseModel):
 
 # 로그인 테이블
 class t_login(Base):
-    __tablename__ = 't_login'
+    __tablename__ = 't_logins'
     mb_no = Column(Integer, primary_key=True, autoincrement=True)
     mb_email = Column(String(45), nullable=False, unique=True)
     mb_pw = Column(String(300), nullable=False)
 
     # member = relationship("t_member", back_populates="login")
-    email = relationship("t_user", back_populates="mail")
+    email = relationship("t_member", back_populates="mail")
 
 # 로그인 테이블 속성
 
