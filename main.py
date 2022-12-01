@@ -1,3 +1,6 @@
+import numpy as np
+import random
+import pickle
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
 from fastapi import FastAPI, File
 from typing import List
@@ -15,6 +18,8 @@ import uuid
 import boto3
 import base64
 
+import uvicorn
+import json
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -199,17 +204,50 @@ async def create_member(info: dict) -> dict:
 
 
 # --------------상호추천 알고리즘 적용, 추출 ---------------------------------------------
-
 @app.post("/recommend")
 async def create_member(info: dict) -> dict:
+
     info["email"] = info["email"].replace('"', '', 2)
-    print(info["email"])
+    print(info["email"]) 
     user = session.query(t_login).filter(
         (t_login.mb_email == info["email"])).first()
     user_no = user.mb_no
     user_email = user.mb_email
-    print(user_no)
-    return {'data': 'ㅋㅋ'}
+    f_user = session.query(t_member).filter(
+        t_member.mb_no == user_no).first()
+   # 추천을 누른 회원의 데이터 정보 빼오기
+    mb_data.append(f_user.mb_no)
+    mb_data.append(f_user.mb_email)
+    mb_data.append(f_user.mb_nickname)
+    mb_data.append(f_user.mb_gender)
+    mb_data.append(f_user.mb_region)
+    mb_data.append(f_user.mb_region_more)
+    mb_data.append(f_user.mb_birthdate)
+    mb_data.append(f_user.mb_marriage_yn)
+    mb_data.append(f_user.mb_photo_yn)
+    mb_data.append(f_user.mb_photo_cnt)
+    mb_data.append(f_user.mb_profile)
+    mb_data.append(f_user.mb_job)
+    mb_data.append(f_user.mb_job_more)
+    mb_data.append(f_user.mb_salary)
+    mb_data.append(f_user.mb_height)
+    mb_data.append(f_user.mb_weight)
+    mb_data.append(f_user.mb_religion)
+    mb_data.append(f_user.mb_car)
+    mb_data.append(f_user.mb_style)
+    mb_data.append(f_user.mb_hobby)
+    mb_data.append(f_user.mb_marriage_plan)
+    mb_data.append(f_user.mb_fashion)
+    mb_data.append(f_user.mb_asset)
+    mb_data.append(f_user.mb_food)
+    mb_data.append(f_user.mb_smoke_yn)
+    mb_data.append(f_user.mb_drink_yn)
+    mb_data.append(f_user.mb_health)
+    mb_data.append(f_user.mb_age)
+    print(np.array([mb_data]))
+    return {'data': 'ㅋㅋ'}, mb_data # 머신러닝 준비중
+
+# 여기는 나중에 코드 줄여야겠당
 
 # -------------이미지 s3 저장 및 웹으로 보내기 -------------------------------
 
@@ -253,3 +291,15 @@ async def create_file(userImage: bytes = File(...)):
     print(image_url)
 
     return {"True"}
+
+
+# ------------------------- 피클 받는 과정 연습 ----------------------
+@app.get("/")
+async def create_user():
+    data = pickle.load(open("test.pkl", 'rb'))
+
+    return data
+
+# if __name__ == '__main__':
+#     uvicorn .run(app, host="0.0.0.0", port=8000)
+#     pass
