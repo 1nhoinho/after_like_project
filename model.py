@@ -193,9 +193,14 @@ class login(BaseModel):
 
 class t_image(Base):
     __tablename__ = "t_image"
-
-    mb_no = Column(Integer, primary_key=True)
-    mb_image = Column(String(1000), nullable=False)
+    img_no = Column(Integer, primary_key=True)
+    mb_no = Column(Integer)
+    mb_image1 = Column(String(1000), nullable=False)
+    mb_image2 = Column(String(1000), nullable=False)
+    mb_image3 = Column(String(1000), nullable=False)
+    mb_image4 = Column(String(1000), nullable=False)
+    mb_image5 = Column(String(1000), nullable=False)
+    mb_image6 = Column(String(1000), nullable=False)
 
 
 def main():

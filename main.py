@@ -6,13 +6,13 @@ from fastapi import FastAPI, File
 from typing import List
 from starlette.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
-
 from db import session
 from model import t_member, t_login, t_user, t_image
 import jwt
 import time
 from datetime import datetime
 
+from hangle import 지역, 성별, 지역상세, 혈액형, 음주, 흡연, 종교
 import io
 import uuid
 import boto3
@@ -44,7 +44,7 @@ app.add_middleware(
 )
 
 # ----------API 정의------------
-mb_data = []
+mb_data1 = []
 
 
 # ------------------------ 회원가입 !-----------------------------------------
@@ -66,7 +66,7 @@ async def create_user(info: dict) -> dict:
 
         login.append(info)
         mb = t_member()
-        us = t_user()
+        im = t_image()
         lg = t_login()
         # lg.mb_name = info["nickname"]
         lg.mb_email = info["email"]
@@ -76,25 +76,27 @@ async def create_user(info: dict) -> dict:
         session.add(lg)
         session.commit()
 
+        im.mb_no = lg.mb_no
+
+        session.add(im)
+        session.commit()
+
         mb.mb_no = lg.mb_no
         mb.mb_email = lg.mb_email
-
         session.add(mb)
         session.commit()
 
         member = session.query(t_login).filter(
             t_login.mb_no == mb.mb_no).first()
         print("아이디가 만들어졌습니다")
-        print(mb.mb_no)
         email = lg.mb_email
-        print(email)
         return {"isReady": True, "repeat": True, "email": email}
 
 
 # --------------------------- 로그인!!--------------------------------------------
 @app.post("/login")
 async def add_login(info: dict):  # 가입정보를 딕셔너리 형태로 받아옴
-    mb_data.append(info)
+    mb_data1.append(info)
     print(info)
 
     password = info["password"]
@@ -113,7 +115,7 @@ async def add_login(info: dict):  # 가입정보를 딕셔너리 형태로 받�
 @app.put("/user-data-input")
 async def create_member(info: dict) -> dict:
 
-    mb_data.append(info)
+    mb_data1.append(info)
     info["email"] = info["email"].replace('"', '', 2)
     user1 = session.query(t_login).filter(
         (t_login.mb_email == info["email"])).first()
@@ -206,7 +208,7 @@ async def create_member(info: dict) -> dict:
 # --------------상호추천 알고리즘 적용, 추출 ---------------------------------------------
 @app.post("/recommend")
 async def create_member(info: dict) -> dict:
-
+    mb_data = []
     info["email"] = info["email"].replace('"', '', 2)
     print(info["email"])
     user = session.query(t_login).filter(
@@ -245,60 +247,165 @@ async def create_member(info: dict) -> dict:
     mb_data.append(f_user.mb_health)
     mb_data.append(f_user.mb_age)
     print(np.array([mb_data]))
+
     return {'data': 'ㅋㅋ'}, mb_data  # 머신러닝 준비중
 
 # 여기는 나중에 코드 줄여야겠당
 
 # -------------이미지 s3 저장 및 웹으로 보내기 -------------------------------
+#  userImage: bytes = File(...)
+
+
+# @app.put("/user-data-input/user-image-input")
+# async def create_file(info: dict):
+#     ##### 지우지마####
+#     for i in range(0, 6):
+#         if i == "undefined" or None:
+#             print("zzzzz")
+#             pass
+#         else:
+#             globals()["img"+str(i+1)] = info["formData"][i]  # 길이 확인할려고~
+#             img = globals()["img"+str(i+1)]
+#             # 스트링으로 바꿔야 인식함
+#             image = bytes(img, 'utf-8')  # 바이트로 변환
+#             userimage = image[24:]  # data:image/bmp;base64< 이거 없애야 디코딩됨
+#             imgdata = base64.b64decode(userimage)  # 디코딩 하자
+#             print(imgdata)
+#             # image =Image.open(io.BytesIO(imgdata)) # 이미지 오픈
+#             # image.show()#이미지보기
+#             file = io.BytesIO(imgdata)  # 디코딩 이미지 파일로 만들기
+#             file.name = 'asd'
+#             # 파일에 이름줘야함 {}<<이거써서 이메일같은거 넣으면될듯
+
+#             url = "image"
+
+#             s3_client = boto3.client(  # aws 접속코드
+#                 service_name="s3",
+#                 region_name="ap-northeast-2",
+#                 aws_access_key_id="AKIAW3XAAHKCN3ZSO6LT",
+#                 aws_secret_access_key="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"
+#             )
+
+#             s3_client.upload_fileobj(  # aws업로드
+#                 file,
+#                 "notfound-404",  # 버킷이름
+#                 url,  # 여기에 주소결정
+#                 ExtraArgs={
+#                     "ContentType": "public-read"
+#                 }
+#             )
+
+#             image_url = url  # 업로드된 이미지의 url이 설정값으로 저장됨
+#             timage = t_image()  # 이미지 주소 디비 저장
+#             timage.mb_image = image_url
+#             session.add(timage)
+#             session.commit()
+
+#     return {"isAuthenticated": True}
 
 
 @app.put("/user-data-input/user-image-input")
-async def create_file(userImage: bytes = File(...)):
-   ###### 지우지마####
-    print(len(userImage))  # 길이 확인할려고~
-    userImage2 = str(userImage)  # 스트링으로 바꿔야 인식함
-    userimage = userImage2[24:]  # data:image/bmp;base64< 이거 없애야 디코딩됨
+async def create_file(info: dict):
 
-    imgdata = base64.b64decode(userimage)  # 디코딩 하자
-    # image =Image.open(io.BytesIO(imgdata)) # 이미지 오픈
-    # image.show()#이미지보기
-    file = io.BytesIO(imgdata)  # 디코딩 이미지 파일로 만들기
-    file.name = "123.png"  # 파일에 이름줘야함 {}<<이거써서 이메일같은거 넣으면될듯
+    for i in range(0, 6):
+        globals()["img"+str(i)] = info["formData"][i]
+        img = globals()["img"+str(i)]   # 이미지 6개 딕셔너리를
+        if globals()["img"+str(i)] == f"{''}":
+            pass
+        else:
+            image1 = bytes(img, 'utf-8')  # 바이트로 변환
 
-    url = uuid.uuid1().hex  # 유니크한 네임 줘야함
+    ###### 지우지마####
 
-    s3_client = boto3.client(  # aws 접속코드
-        service_name="s3",
-        region_name="ap-northeast-2",
-        aws_access_key_id="AKIAW3XAAHKCN3ZSO6LT",
-        aws_secret_access_key="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"
-    )
+        # print(len(userImage))  # 길이 확인할려고~
+            userImage2 = str(image1)  # 스트링으로 다시 바꿔야 인식함
+            userimage = userImage2[24:]  # data:image/bmp;base64< 이거 없애야 디코딩됨
 
-    s3_client.upload_fileobj(  # aws업로드
-        file,
-        "notfound-404",  # 버킷이름
-        url,  # 여기에 주소결정
-        ExtraArgs={
-            "ContentType": "public-read"
-        }
-    )
+            imgdata = base64.b64decode(userimage)  # 디코딩 하자
+        # image =Image.open(io.BytesIO(imgdata)) # 이미지 오픈
 
-    image_url = url  # 업로드된 이미지의 url이 설정값으로 저장됨
-    timage = t_image()  # 이미지 주소 디비 저장
-    timage.mb_image = image_url
-    session.add(timage)
+        # image.show()#이미지보기
+            file = io.BytesIO(imgdata)  # 디코딩 이미지 파일로 만들기
+            # if img == globals()["img"+str(i)]:
+            # 파일에 이름줘야함 {}<<이거써서 이메일같은거 넣으면될듯
+            img_list = list(info["imageName"].values())
+            file.name = img_list[i]
+            print(file.name)
+
+    # url = uuid.uuid1().hex  # 유니크한 네임 줘야함
+            url = file.name
+            s3_client = boto3.client(  # aws 접속코드
+                service_name="s3",
+                region_name="ap-northeast-2",
+                aws_access_key_id="AKIAW3XAAHKCN3ZSO6LT",
+                aws_secret_access_key="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"
+            )
+
+            s3_client.upload_fileobj(  # aws업로드
+                file,
+                "notfound-404",  # 버킷이름
+                url,  # 여기에 주소결정
+                ExtraArgs={
+                    "ContentType": "public-read"
+                }
+            )
+
+            # timage = t_image()  # 이미지 주소 디비 저장
+            # timage.mb_image1 = url
+            # session.add(timage)
+            # session.commit()
+    info["email"] = info["email"].replace('"', '', 2)
+    user = session.query(t_login).filter(
+        (t_login.mb_email == info["email"])).first()
+    user_no = user.mb_no
+    i_user = session.query(t_image).filter(
+        t_image.mb_no == user_no).first()
+    print(img_list)
+    # if i_user.mb_no == user_no:
+    # globals()["i_user.mb_image"+str(i+1)] = url
+    # print(globals()["i_user.mb_image"+str(i+1)])
+    # print(i_user.mb_image1)
+    # print(i_user.mb_image2)
+    i_user.mb_image1 = img_list[0]
+    i_user.mb_image2 = img_list[1]
+    i_user.mb_image3 = img_list[2]
+    i_user.mb_image4 = img_list[3]
+    i_user.mb_image5 = img_list[4]
+    i_user.mb_image6 = img_list[5]
+
+    session.add(i_user)
     session.commit()
-    print(image_url)
 
+    del img_list[:]
     return {"isAuthenticated": True}
 
-
 # ------------------------- 피클 받는 과정 연습 ----------------------
-@app.get("/")
-async def create_user():
-    data = pickle.load(open("test.pkl", 'rb'))
 
-    return data
+
+# @app.get("/")
+# async def create_user():
+#     # data = pickle.load(open("test.pkl", 'rb'))
+#     user = session.query(t_member).filter((t_member.mb_no == "13")).first()
+#     gender = 성별()
+#     region = 지역()
+#     regionuser = 지역상세()
+#     alcohol = 음주()
+#     somke = 흡연()
+#     religion = 종교()
+#     # job=직업()
+#     # print(user.mb_nickname)
+#     print(gender[user.mb_gender])
+#     # print(user.mb_birthdate)
+#     # print(region[user.mb_region])
+#     # print(regionuser[user.mb_region_more])
+#     # print(user.mb_height)
+#     # print(user.mb_weight)
+#     # print(alcohol[user.mb_drinking_yn])
+#     # print(somke[user.mb_smoking_yn])
+#     # print(religion[user.mb_religion])
+#     # print(job[user.mb_job])
+
+#     return gender[user.mb_gender]
 
 # if __name__ == '__main__':
 #     uvicorn .run(app, host="0.0.0.0", port=8000)
