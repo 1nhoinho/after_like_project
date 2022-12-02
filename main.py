@@ -88,7 +88,7 @@ async def create_user(info: dict) -> dict:
         print(mb.mb_no)
         email = lg.mb_email
         print(email)
-        return {"isReady": True, "email": email}
+        return {"isReady": True, "repeat": True, "email": email}
 
 
 # --------------------------- 로그인!!--------------------------------------------
@@ -208,7 +208,7 @@ async def create_member(info: dict) -> dict:
 async def create_member(info: dict) -> dict:
 
     info["email"] = info["email"].replace('"', '', 2)
-    print(info["email"]) 
+    print(info["email"])
     user = session.query(t_login).filter(
         (t_login.mb_email == info["email"])).first()
     user_no = user.mb_no
@@ -245,7 +245,7 @@ async def create_member(info: dict) -> dict:
     mb_data.append(f_user.mb_health)
     mb_data.append(f_user.mb_age)
     print(np.array([mb_data]))
-    return {'data': 'ㅋㅋ'}, mb_data # 머신러닝 준비중
+    return {'data': 'ㅋㅋ'}, mb_data  # 머신러닝 준비중
 
 # 여기는 나중에 코드 줄여야겠당
 
@@ -290,7 +290,7 @@ async def create_file(userImage: bytes = File(...)):
     session.commit()
     print(image_url)
 
-    return {"True"}
+    return {"isAuthenticated": True}
 
 
 # ------------------------- 피클 받는 과정 연습 ----------------------
