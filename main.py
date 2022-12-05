@@ -513,15 +513,28 @@ async def post_user(info: dict):
     print(characterlist)
     # 이미지 테이블 이미지 불러오기
     user2 = user.mb_no
-    u_image = session.query(t_image).filter_by(mb_no=user2).first()
-    image1 = u_image.mb_image1
-    image2 = u_image.mb_image2
-    image3 = u_image.mb_image3
-    image4 = u_image.mb_image4
-    image5 = u_image.mb_image5
-    image6 = u_image.mb_image6
-    i_list = [image1,image2,image3,image4,image5,image6]
-
+    u_image = session.query(t_image).filter(t_image.mb_no == user2).first()
+    i1 = u_image.mb_image1
+    i2 = u_image.mb_image2
+    i3 = u_image.mb_image3
+    i4 = u_image.mb_image4
+    i5 = u_image.mb_image5
+    i6 = u_image.mb_image6
+    i_list = [i1,i2,i3,i4,i5,i6]
+    img_list = []
+    for i in i_list :
+        if i == '' :
+            i = 'default'
+            img_list.append(i)
+        else :
+            img_list.append(i)
+    image1 = img_list[0]
+    image2 = img_list[1]
+    image3 = img_list[2]
+    image4 = img_list[3]
+    image5 = img_list[4]
+    image6 = img_list[5]
+    print(img_list)
     return [{"nickname": nickname, "gender": gender, "birth": birth, "region": region,
             "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
              "married_plan": married_plan, "education": education, "job": job, "salary": salary,
