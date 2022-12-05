@@ -1,5 +1,4 @@
 import numpy as np
-import random
 import pickle
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
 from fastapi import FastAPI, File
@@ -97,7 +96,6 @@ async def create_user(info: dict) -> dict:
 @app.post("/login")
 async def add_login(info: dict):  # 가입정보를 딕셔너리 형태로 받아옴
     mb_data1.append(info)
-    print(info)
 
     password = info["password"]
 
@@ -122,9 +120,7 @@ async def create_member(info: dict) -> dict:
     user_no = user1.mb_no
     user2 = session.query(t_member).filter(
         (t_member.mb_no == user_no)).first()
-    print(user2)
     if user2:
-        print(user2)
         # 성별
         user2.mb_gender = info["gender"]
         # 생년
@@ -210,7 +206,6 @@ async def create_member(info: dict) -> dict:
 async def create_member(info: dict) -> dict:
     mb_data = []
     info["email"] = info["email"].replace('"', '', 2)
-    print(info["email"])
     user = session.query(t_login).filter(
         (t_login.mb_email == info["email"])).first()
     user_no = user.mb_no
@@ -252,60 +247,11 @@ async def create_member(info: dict) -> dict:
 
 # 여기는 나중에 코드 줄여야겠당
 
-# -------------이미지 s3 저장 및 웹으로 보내기 -------------------------------
-#  userImage: bytes = File(...)
-
-
-# @app.put("/user-data-input/user-image-input")
-# async def create_file(info: dict):
-#     ##### 지우지마####
-#     for i in range(0, 6):
-#         if i == "undefined" or None:
-#             print("zzzzz")
-#             pass
-#         else:
-#             globals()["img"+str(i+1)] = info["formData"][i]  # 길이 확인할려고~
-#             img = globals()["img"+str(i+1)]
-#             # 스트링으로 바꿔야 인식함
-#             image = bytes(img, 'utf-8')  # 바이트로 변환
-#             userimage = image[24:]  # data:image/bmp;base64< 이거 없애야 디코딩됨
-#             imgdata = base64.b64decode(userimage)  # 디코딩 하자
-#             print(imgdata)
-#             # image =Image.open(io.BytesIO(imgdata)) # 이미지 오픈
-#             # image.show()#이미지보기
-#             file = io.BytesIO(imgdata)  # 디코딩 이미지 파일로 만들기
-#             file.name = 'asd'
-#             # 파일에 이름줘야함 {}<<이거써서 이메일같은거 넣으면될듯
-
-#             url = "image"
-
-#             s3_client = boto3.client(  # aws 접속코드
-#                 service_name="s3",
-#                 region_name="ap-northeast-2",
-#                 aws_access_key_id="AKIAW3XAAHKCN3ZSO6LT",
-#                 aws_secret_access_key="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"
-#             )
-
-#             s3_client.upload_fileobj(  # aws업로드
-#                 file,
-#                 "notfound-404",  # 버킷이름
-#                 url,  # 여기에 주소결정
-#                 ExtraArgs={
-#                     "ContentType": "public-read"
-#                 }
-#             )
-
-#             image_url = url  # 업로드된 이미지의 url이 설정값으로 저장됨
-#             timage = t_image()  # 이미지 주소 디비 저장
-#             timage.mb_image = image_url
-#             session.add(timage)
-#             session.commit()
-
-#     return {"isAuthenticated": True}
+# -------------이미지 s3 저장 및 웹으로 보내기 -------------------------------'
 
 
 @app.put("/user-data-input/user-image-input")
-async def create_file(info: dict):
+async def create_image(info: dict):
 
     for i in range(0, 6):
         globals()["img"+str(i)] = info["formData"][i]
@@ -379,34 +325,61 @@ async def create_file(info: dict):
     del img_list[:]
     return {"isAuthenticated": True}
 
-# ------------------------- 피클 받는 과정 연습 ----------------------
 
+# -------------- 유저 정보 수정 및 회원탈퇴 ---------------------------
+@app.delete("/user-setting")
+async def delete_user(info: dict):
+    info["email"] = info["email"].replace('"', '', 2)
+    print(info["email"])
 
-# @app.get("/")
-# async def create_user():
-#     # data = pickle.load(open("test.pkl", 'rb'))
-#     user = session.query(t_member).filter((t_member.mb_no == "13")).first()
-#     gender = 성별()
-#     region = 지역()
-#     regionuser = 지역상세()
-#     alcohol = 음주()
-#     somke = 흡연()
-#     religion = 종교()
-#     # job=직업()
-#     # print(user.mb_nickname)
-#     print(gender[user.mb_gender])
-#     # print(user.mb_birthdate)
-#     # print(region[user.mb_region])
-#     # print(regionuser[user.mb_region_more])
-#     # print(user.mb_height)
-#     # print(user.mb_weight)
-#     # print(alcohol[user.mb_drinking_yn])
-#     # print(somke[user.mb_smoking_yn])
-#     # print(religion[user.mb_religion])
-#     # print(job[user.mb_job])
+  #   회원테이블 유저 정보 삭제
+    user1 = session.query(t_member).filter_by(mb_email=info["email"]).first()
 
-#     return gender[user.mb_gender]
+    session.delete(user1)
+    session.commit()
+  # 이미지 테이블 유저 정보 삭제
+    user = session.query(t_login).filter_by(mb_email=info["email"]).first()
+    user.mb_no == t_image.mb_no
+    user2 = session.query(t_image).filter_by(mb_no=user.mb_no).first()
 
-# if __name__ == '__main__':
-#     uvicorn .run(app, host="0.0.0.0", port=8000)
-#     pass
+    session.delete(user2)
+    session.commit()
+  # 로그인 테이블 유저 정보 삭제
+    user = session.query(t_login).filter_by(mb_email=info["email"]).first()
+    user.mb_no == t_image.mb_no
+
+    user1 = session.query(t_image).filter_by(mb_no=user.mb_no).first()
+
+    session.delete(user)
+    session.commit()
+
+    # ------------------------- 피클 받는 과정 연습 ----------------------
+
+    # @app.get("/")
+    # async def create_user():
+    #     # data = pickle.load(open("test.pkl", 'rb'))
+    #     user = session.query(t_member).filter((t_member.mb_no == "13")).first()
+    #     gender = 성별()
+    #     region = 지역()
+    #     regionuser = 지역상세()
+    #     alcohol = 음주()
+    #     somke = 흡연()
+    #     religion = 종교()
+    #     # job=직업()
+    #     # print(user.mb_nickname)
+    #     print(gender[user.mb_gender])
+    #     # print(user.mb_birthdate)
+    #     # print(region[user.mb_region])
+    #     # print(regionuser[user.mb_region_more])
+    #     # print(user.mb_height)
+    #     # print(user.mb_weight)
+    #     # print(alcohol[user.mb_drinking_yn])
+    #     # print(somke[user.mb_smoking_yn])
+    #     # print(religion[user.mb_religion])
+    #     # print(job[user.mb_job])
+
+    #     return gender[user.mb_gender]
+
+    # if __name__ == '__main__':
+    #     uvicorn .run(app, host="0.0.0.0", port=8000)
+    #     pass
