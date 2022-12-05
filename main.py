@@ -404,12 +404,12 @@ async def post_user(info: dict):
     image5 = u_image.mb_image5
     image6 = u_image.mb_image6
 
-    return {"nickname": nickname, "gender": gender, "birth": birth, "region": region,
+    return [{"nickname": nickname, "gender": gender, "birth": birth, "region": region,
             "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
-            "married_plan": married_plan, "education": education, "job": job, "salary": salary,
-            "asset": asset, "car": car,
-            "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
-                      "image5": image5, "image6": image6}}
+             "married_plan": married_plan, "education": education, "job": job, "salary": salary,
+             "asset": asset, "car": car,
+             "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
+                       "image5": image5, "image6": image6}}]
 
     # ------------------------- 메인페이지 유저 정보 보내기----------------------
 
