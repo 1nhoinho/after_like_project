@@ -186,6 +186,8 @@ async def create_member(info: dict) -> dict:
         user2.mb_car = info["vehicle"]
         # 혈액형
         user2.mb_bloodtype = info["bloodType"]
+        # 운동
+        user2.mb_health = info["health"]
         # 가입 시간
         user2.mb_joindate = time.localtime()
         # 업데이트 시간
