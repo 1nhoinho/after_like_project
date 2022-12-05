@@ -361,10 +361,11 @@ async def post_user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
 
+    nickname = user.mb_nickname
     gender = 성별()[user.mb_gender]
     birth = user.mb_birthdate
 
-    return {f"gender": {gender}, "birth": {birth}}
+    return {f"nickname": {nickname}, "gender": {gender}, "birth": {birth}, "email": info["email"]}
     # ------------------------- 메인페이지 유저 정보 보내기----------------------
 
 
