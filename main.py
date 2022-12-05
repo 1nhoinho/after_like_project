@@ -28,10 +28,8 @@ conn = pymysql.connect(host="project-db-stu.ddns.net", port=3307, user='inho',
                        password='k123456789', db='inho', charset='utf8')
 cursor = conn.cursor(pymysql.cursors.DictCursor)
 ### 피클 자리##################################
-woman = pickle.load(open(
-    "C:/Users/gjaischool/Desktop/project2/404-project/404_back/tree_model_man.pkl", 'rb'))
-man = pickle.load(open(
-    "C:/Users/gjaischool/Desktop/project2/404-project/404_back/tree_model_woman.pkl", 'rb'))
+woman = pickle.load(open("tree_model_man.pkl", 'rb'))
+man = pickle.load(open("tree_model_woman.pkl", 'rb'))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -219,47 +217,6 @@ async def create_member(info: dict) -> dict:
 
 # --------------상호추천 알고리즘 적용, 추출 ---------------------------------------------
 @app.post("/recommend")
-# async def create_member(info: dict) -> dict:
-#     mb_data = []
-#     info["email"] = info["email"].replace('"', '', 2)
-#     user = session.query(t_login).filter(
-#         (t_login.mb_email == info["email"])).first()
-#     user_no = user.mb_no
-#     user_email = user.mb_email
-#     f_user = session.query(t_member).filter(
-#         t_member.mb_no == user_no).first()
-#    # 추천을 누른 회원의 데이터 정보 빼오기
-#     mb_data.append(f_user.mb_no)
-#     mb_data.append(f_user.mb_email)
-#     mb_data.append(f_user.mb_nickname)
-#     mb_data.append(f_user.mb_gender)
-#     mb_data.append(f_user.mb_region)
-#     mb_data.append(f_user.mb_region_more)
-#     mb_data.append(f_user.mb_birthdate)
-#     mb_data.append(f_user.mb_marriage_yn)
-#     mb_data.append(f_user.mb_photo_yn)
-#     mb_data.append(f_user.mb_photo_cnt)
-#     mb_data.append(f_user.mb_profile)
-#     mb_data.append(f_user.mb_job)
-#     mb_data.append(f_user.mb_job_more)
-#     mb_data.append(f_user.mb_salary)
-#     mb_data.append(f_user.mb_height)
-#     mb_data.append(f_user.mb_weight)
-#     mb_data.append(f_user.mb_religion)
-#     mb_data.append(f_user.mb_car)
-#     mb_data.append(f_user.mb_style)
-#     mb_data.append(f_user.mb_hobby)
-#     mb_data.append(f_user.mb_marriage_plan)
-#     mb_data.append(f_user.mb_fashion)
-#     mb_data.append(f_user.mb_asset)
-#     mb_data.append(f_user.mb_food)
-#     mb_data.append(f_user.mb_smoke_yn)
-#     mb_data.append(f_user.mb_drink_yn)
-#     mb_data.append(f_user.mb_health)
-#     mb_data.append(f_user.mb_age)
-#     # print(np.array([mb_data]))
-
-#     return {'data': 'ㅋㅋ'}, mb_data  # 머신러닝 준비중
 async def create_member(info: dict) -> dict:
     mb_data = []
     info["email"] = info["email"].replace('"', '', 2)
@@ -499,6 +456,8 @@ async def post_user(info: dict):
     education = 학력()[user.mb_academic]
     # 직업
     job = 직업()[user.mb_job]
+    # 직업상세
+    job_more = 직업()[user.mb_job_more]
     # 연봉
     salary = 연봉()[user.mb_salary]
     # 자산
@@ -550,9 +509,22 @@ async def post_user(info: dict):
     return [{"nickname": nickname, "gender": gender, "birth": birth, "region": region,
             "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
              "married_plan": married_plan, "education": education, "job": job, "salary": salary,
-             "asset": asset, "car": car, "style": style, "fashion": fashionlist, "character": characterlist,
+             "asset": asset, "car": car, "style": style, "fashion": fashionlist, "character": characterlist, "job_info": job_more,
              "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
                        "image5": image5, "image6": image6}}]
+
+# 프로필 수정에서 자기소개, 나의 이상형 정보 넣기
+@app.put("/user-setting/user-information-modify")
+async def put_user(info: dict):
+    # info["email"] = info["email"].replace('"', '', 2)
+    print(info["introduce"])
+    print(info["wanted"])
+    
+
+
+
+    
+
 
     # ------------------------- 메인페이지 유저 정보 보내기----------------------
 
