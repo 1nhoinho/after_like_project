@@ -10,7 +10,8 @@ import jwt
 import time
 from datetime import datetime
 
-from hangle import 지역, 성별, 지역상세, 혈액형, 음주, 흡연, 종교
+from hangle import 지역, 성별, 지역상세, 혈액형, 음주, 흡연, 종교, 운동, 결혼유무, 결혼계획, 학력, 직업, 연봉
+from hangle import 자산, 차량
 import io
 import uuid
 import boto3
@@ -123,8 +124,7 @@ async def create_member(info: dict) -> dict:
         # 성별
         user2.mb_gender = info["gender"]
         # 생년
-
-        user2.mb_birthdate = info["birth"][0:4]
+        user2.mb_birthdate = info["birth"]
         # 지역
         user2.mb_region = info["region"]
         # 지역상세
@@ -359,13 +359,56 @@ async def delete_user(info: dict):
 async def post_user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-
+    # 닉네임
     nickname = user.mb_nickname
+    # 성별
     gender = 성별()[user.mb_gender]
+    # 생일
     birth = user.mb_birthdate
+    # 지역
+    region = 지역()[user.mb_region]
+    # 혈액형
+    blood = 혈액형()[user.mb_blood]
+    # 운동
+    health = 운동()[user.mb_health]
+    # 음주
+    drink = 음주()[user.mb_drink]
+    # 흡연
+    smoke = 흡연()[user.mb_smoke]
+    # 결혼유무
+    married = 결혼유무()[user.mb_married]
+    # 결혼계획
+    married_plan = 결혼계획()[user.mb_marriage_plan]
+    # 학력
+    education = 학력()[user.mb_education]
+    # 직업
+    job = 직업()[user.mb_job]
+    # 연봉
+    salary = 연봉()[user.mb_salary]
+    # 자산
+    asset = 자산()[user.mb_asset]
+    # 차량
+    car = 차량()[user.mb_car]
+
+    # 이미지 테이블 이미지 불러오기
+    user2 = user.mb_no
+    u_image = session.query(t_image).filter_by(mb_no=user2).first()
+    image1 = u_image.image1
+    image2 = u_image.image2
+    image3 = u_image.image3
+    image4 = u_image.image4
+    image5 = u_image.image5
+    image6 = u_image.image6
+
     print(nickname, gender, birth)
 
-    return {"nickname": nickname, "gender": gender, "birth": birth, "email": info["email"]}
+    return {"nickname": nickname, "gender": gender, "birth": birth, "region": region,
+            "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
+            "married_plan": married_plan, "education": education, "job": job, "salary": salary,
+            "asset": asset, "car": car,
+            "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
+                      "image5": image5, "image6": image6}}
+
     # ------------------------- 메인페이지 유저 정보 보내기----------------------
 
 

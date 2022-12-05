@@ -537,6 +537,20 @@ def 운동():
     return health
 
 
+def 결혼유무():
+    married = {"w": "초혼",
+               "r": "재혼"}
+    return married
+
+
+def 결혼계획():
+    married_plan = {"3m": "3달 이내",
+                    "6m": "6달 이내",
+                    "1y": "1년 이내",
+                    "a": "언제든지"}
+    return married_plan
+
+
 def 남자외모():
     mamapperance = {"1": "#평범함",
                     "2": "#귀여움",
