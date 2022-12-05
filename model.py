@@ -23,7 +23,7 @@ class t_member(Base):
     mb_photo_cnt = Column(String(45), nullable=False)
     mb_profile = Column(String(500), nullable=False)
     mb_job = Column(String(45), nullable=False)
-    mb_job_more = Column(String(45), nullable=False)
+    mb_job_more = Column(String(100), nullable=False)
     mb_salary = Column(Integer, nullable=True)
     mb_height = Column(String(45), nullable=True)
     mb_weight = Column(String(45), nullable=True)

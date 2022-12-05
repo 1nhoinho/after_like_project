@@ -457,7 +457,7 @@ async def post_user(info: dict):
     # 직업
     job = 직업()[user.mb_job]
     # 직업상세
-    job_more = 직업()[user.mb_job_more]
+    job_more = user.mb_job_more
     # 연봉
     salary = 연봉()[user.mb_salary]
     # 자산
