@@ -10,8 +10,8 @@ import jwt
 import time
 from datetime import datetime
 
-from hangle import 지역, 성별, 지역상세, 혈액형, 음주, 흡연, 종교, 운동, 결혼유무, 결혼계획, 학력, 직업, 연봉
-from hangle import 자산, 차량, 혈액형
+from hangle import 지역, 성별,  혈액형, 음주, 흡연, 운동, 결혼유무, 결혼계획, 학력, 직업, 연봉
+from hangle import 자산, 차량, 혈액형, 남자외모, 여자외모, 남자패션, 여자패션, 남자성격, 여자성격
 import io
 import uuid
 import boto3
@@ -393,7 +393,38 @@ async def post_user(info: dict):
     asset = 자산()[user.mb_asset]
     # 차량
     car = 차량()[user.mb_car]
-
+    # 외모
+    style = user.mb_style.split(",")[0]
+    if user.mb_gender == 'm':
+        style = 남자외모()[user.mb_style]
+    else:
+        style = 여자외모()[user.mb_style]
+        return style
+    # 패션
+    fashion = user.mb_fashion.split(",")
+    fashionlist = []
+    if user.mb_gender == "m":
+        for i in fashion:
+            a = 남자패션()[i]
+            fashionlist.append(a)
+    else:
+        for i in fashion:
+            a = 여자패션()[i]
+            fashionlist.append(a)
+        return fashionlist
+    # 성격
+    character = user.mb_character.split(",")
+    characterlist = []
+    if user.mb_gender == "m":
+        for i in character:
+            a = 남자성격()[i]
+            characterlist.append(a)
+    else:
+        for i in character:
+            a = 여자성격()[i]
+            characterlist.append(a)
+        return characterlist
+    print(characterlist)
     # 이미지 테이블 이미지 불러오기
     user2 = user.mb_no
     u_image = session.query(t_image).filter_by(mb_no=user2).first()
@@ -407,7 +438,7 @@ async def post_user(info: dict):
     return [{"nickname": nickname, "gender": gender, "birth": birth, "region": region,
             "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
              "married_plan": married_plan, "education": education, "job": job, "salary": salary,
-             "asset": asset, "car": car,
+             "asset": asset, "car": car, "style": style, "fashion": fashionlist, "character": characterlist,
              "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
                        "image5": image5, "image6": image6}}]
 
