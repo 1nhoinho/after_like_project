@@ -1,4 +1,3 @@
-import numpy as np
 import pickle
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
 from fastapi import FastAPI, File
@@ -364,8 +363,9 @@ async def post_user(info: dict):
     nickname = user.mb_nickname
     gender = 성별()[user.mb_gender]
     birth = user.mb_birthdate
+    print(nickname, gender, birth)
 
-    return {f"nickname": {nickname}, "gender": {gender}, "birth": {birth}, "email": info["email"]}
+    return {"nickname": nickname, "gender": gender, "birth": birth, "email": info["email"]}
     # ------------------------- 메인페이지 유저 정보 보내기----------------------
 
 
