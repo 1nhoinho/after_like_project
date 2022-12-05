@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 from hangle import 지역, 성별, 지역상세, 혈액형, 음주, 흡연, 종교, 운동, 결혼유무, 결혼계획, 학력, 직업, 연봉
-from hangle import 자산, 차량
+from hangle import 자산, 차량, 혈액형
 import io
 import uuid
 import boto3
@@ -184,6 +184,8 @@ async def create_member(info: dict) -> dict:
         user2.mb_salary = info["salary"]
         # 차량
         user2.mb_car = info["vehicle"]
+        # 혈액형
+        user2.mb_bloodtype = info["bloodType"]
         # 가입 시간
         user2.mb_joindate = time.localtime()
         # 업데이트 시간
@@ -368,7 +370,7 @@ async def post_user(info: dict):
     # 지역
     region = 지역()[user.mb_region]
     # 혈액형
-    blood = 혈액형()[user.mb_blood]
+    blood = 혈액형()[user.mb_bloodtype]
     # 운동
     health = 운동()[user.mb_health]
     # 음주

@@ -44,6 +44,7 @@ class t_member(Base):
     mb_info_update = Column(DateTime, nullable=True)
     mb_age = Column(String(45), nullable=True)
     mb_ideal = Column(String(500), nullable=False)
+    mb_bloodtype = Column(String(45), nullable=False)
 
     # login = relationship("t_login", back_populates="member", uselist=False)
     mail = relationship("t_login", back_populates="email")
@@ -84,6 +85,7 @@ class member(BaseModel):
     mb_info_update = str
     mb_age = str
     mb_ideal = str
+    mb_bloodtype = str
 
 # 유저 데이터 30000개 테이블
 # class t_user(Base):
