@@ -121,6 +121,20 @@ async def add_login(info: dict):  # 가입정보를 딕셔너리 형태로 받�
 
 
 # ------------------------상세정보 입력----------------------------------------------
+## 닉네임 중복 처리 기능.
+@app.post("/user-data-input/doubleCheck")
+async def create_member(info: dict) -> dict:
+
+    user2 = session.query(t_member).filter(t_member.mb_nickname == info["nickname"]).first()
+    print(user2)
+    # 닉네임
+    if user2:
+        print("gg")
+        return {"doubleCheck" : False}
+    else :
+        print("zz")
+        return {"doubleCheck" : True}
+
 @app.put("/user-data-input")
 async def create_member(info: dict) -> dict:
 
@@ -136,6 +150,8 @@ async def create_member(info: dict) -> dict:
         user2.mb_gender = info["gender"]
         # 생년
         user2.mb_birthdate = info["birth"]
+        #닉네임
+        user2.mb_nickname = info["nickname"]
         # 지역
         user2.mb_region = info["region"]
         # 지역상세
@@ -144,8 +160,6 @@ async def create_member(info: dict) -> dict:
         user2.mb_marriage_yn = info["married"]
         # 결혼 계획
         user2.mb_marriage_plan = info["marriagePlan"]
-        # 닉네임
-        user2.mb_nickname = info["nickname"]
         # 몸무게
         user2.mb_weight = info["weight"]
         # 키
@@ -213,6 +227,7 @@ async def create_member(info: dict) -> dict:
 
     else:
         print("ㅋㅋ")
+
 
 
 # --------------상호추천 알고리즘 적용, 추출 ---------------------------------------------
@@ -505,6 +520,7 @@ async def post_user(info: dict):
     image4 = u_image.mb_image4
     image5 = u_image.mb_image5
     image6 = u_image.mb_image6
+    i_list = [image1,image2,image3,image4,image5,image6]
 
     return [{"nickname": nickname, "gender": gender, "birth": birth, "region": region,
             "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
