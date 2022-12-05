@@ -1,4 +1,5 @@
 import pickle
+import numpy as np
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
 from fastapi import FastAPI, File
 from typing import List
@@ -9,7 +10,7 @@ from model import t_member, t_login,  t_image
 import jwt
 import time
 from datetime import datetime
-
+from 전처리 import 종교전처리, 차전처리, 결혼계획전처리, 음주전처리, 운동전처리, 흡연전처리, 지역전처리
 from hangle import 지역, 성별,  혈액형, 음주, 흡연, 운동, 결혼유무, 결혼계획, 학력, 직업, 연봉
 from hangle import 자산, 차량, 혈액형, 남자외모, 여자외모, 남자패션, 여자패션, 남자성격, 여자성격
 import io
@@ -17,8 +18,20 @@ import uuid
 import boto3
 import base64
 
+import pymysql
+from collections import ChainMap
 import uvicorn
 import json
+
+# DB 접속코드 ---------------------
+conn = pymysql.connect(host="project-db-stu.ddns.net", port=3307, user='inho',
+                       password='k123456789', db='inho', charset='utf8')
+cursor = conn.cursor(pymysql.cursors.DictCursor)
+### 피클 자리##################################
+woman = pickle.load(open(
+    "C:/Users/gjaischool/Desktop/project2/404-project/404_back/tree_model_man.pkl", 'rb'))
+man = pickle.load(open(
+    "C:/Users/gjaischool/Desktop/project2/404-project/404_back/tree_model_woman.pkl", 'rb'))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -206,9 +219,51 @@ async def create_member(info: dict) -> dict:
 
 # --------------상호추천 알고리즘 적용, 추출 ---------------------------------------------
 @app.post("/recommend")
+# async def create_member(info: dict) -> dict:
+#     mb_data = []
+#     info["email"] = info["email"].replace('"', '', 2)
+#     user = session.query(t_login).filter(
+#         (t_login.mb_email == info["email"])).first()
+#     user_no = user.mb_no
+#     user_email = user.mb_email
+#     f_user = session.query(t_member).filter(
+#         t_member.mb_no == user_no).first()
+#    # 추천을 누른 회원의 데이터 정보 빼오기
+#     mb_data.append(f_user.mb_no)
+#     mb_data.append(f_user.mb_email)
+#     mb_data.append(f_user.mb_nickname)
+#     mb_data.append(f_user.mb_gender)
+#     mb_data.append(f_user.mb_region)
+#     mb_data.append(f_user.mb_region_more)
+#     mb_data.append(f_user.mb_birthdate)
+#     mb_data.append(f_user.mb_marriage_yn)
+#     mb_data.append(f_user.mb_photo_yn)
+#     mb_data.append(f_user.mb_photo_cnt)
+#     mb_data.append(f_user.mb_profile)
+#     mb_data.append(f_user.mb_job)
+#     mb_data.append(f_user.mb_job_more)
+#     mb_data.append(f_user.mb_salary)
+#     mb_data.append(f_user.mb_height)
+#     mb_data.append(f_user.mb_weight)
+#     mb_data.append(f_user.mb_religion)
+#     mb_data.append(f_user.mb_car)
+#     mb_data.append(f_user.mb_style)
+#     mb_data.append(f_user.mb_hobby)
+#     mb_data.append(f_user.mb_marriage_plan)
+#     mb_data.append(f_user.mb_fashion)
+#     mb_data.append(f_user.mb_asset)
+#     mb_data.append(f_user.mb_food)
+#     mb_data.append(f_user.mb_smoke_yn)
+#     mb_data.append(f_user.mb_drink_yn)
+#     mb_data.append(f_user.mb_health)
+#     mb_data.append(f_user.mb_age)
+#     # print(np.array([mb_data]))
+
+#     return {'data': 'ㅋㅋ'}, mb_data  # 머신러닝 준비중
 async def create_member(info: dict) -> dict:
     mb_data = []
     info["email"] = info["email"].replace('"', '', 2)
+    print(info["email"])
     user = session.query(t_login).filter(
         (t_login.mb_email == info["email"])).first()
     user_no = user.mb_no
@@ -216,38 +271,95 @@ async def create_member(info: dict) -> dict:
     f_user = session.query(t_member).filter(
         t_member.mb_no == user_no).first()
    # 추천을 누른 회원의 데이터 정보 빼오기
-    mb_data.append(f_user.mb_no)
-    mb_data.append(f_user.mb_email)
-    mb_data.append(f_user.mb_nickname)
-    mb_data.append(f_user.mb_gender)
-    mb_data.append(f_user.mb_region)
-    mb_data.append(f_user.mb_region_more)
-    mb_data.append(f_user.mb_birthdate)
-    mb_data.append(f_user.mb_marriage_yn)
-    mb_data.append(f_user.mb_photo_yn)
-    mb_data.append(f_user.mb_photo_cnt)
-    mb_data.append(f_user.mb_profile)
-    mb_data.append(f_user.mb_job)
-    mb_data.append(f_user.mb_job_more)
-    mb_data.append(f_user.mb_salary)
-    mb_data.append(f_user.mb_height)
-    mb_data.append(f_user.mb_weight)
-    mb_data.append(f_user.mb_religion)
-    mb_data.append(f_user.mb_car)
-    mb_data.append(f_user.mb_style)
-    mb_data.append(f_user.mb_hobby)
-    mb_data.append(f_user.mb_marriage_plan)
-    mb_data.append(f_user.mb_fashion)
-    mb_data.append(f_user.mb_asset)
-    mb_data.append(f_user.mb_food)
-    mb_data.append(f_user.mb_smoke_yn)
-    mb_data.append(f_user.mb_drink_yn)
-    mb_data.append(f_user.mb_health)
-    mb_data.append(f_user.mb_age)
-    # print(np.array([mb_data]))
+    user성별 =f_user.mb_gender
+    data1 = f_user.mb_no
+    data2 = f_user.mb_birthdate[:4]
+    data3 = f_user.mb_job
+    data4 = f_user.mb_height
+    data5 = f_user.mb_weight
+    data6 = f_user.mb_style
+    for i in range(7,62):
+        globals()['data'+str(i)]="0"
+    if (f_user.mb_region_more)=="r":       
+            data7=1 #재혼
+            data8=0 #초혼
+    else : ###"w"면
+            data7=0
+            data8=1
+    종교전처리jc = 종교전처리()
+    #####종교전처리#################################################################
+    if 종교전처리jc[f_user.mb_religion] in 종교전처리jc :
+        globals()['data'+str(종교전처리jc[종교전처리jc[f_user.mb_religion]])]="1"
 
-    return {'data': 'ㅋㅋ'}, mb_data  # 머신러닝 준비중
+    #################차전처리###########################################################
+    차전처리jc = 차전처리()    
+    if 차전처리jc[f_user.mb_car] in 차전처리jc :
+        globals()['data'+str(차전처리jc[차전처리jc[f_user.mb_car]])]="1"
+    ##### 결혼계획 전처리#######################################################
+    결혼계획전처리jc = 결혼계획전처리()  
+    if 결혼계획전처리jc[f_user.mb_marriage_plan] in 결혼계획전처리jc :
+        globals()['data'+str(결혼계획전처리jc[결혼계획전처리jc[f_user.mb_marriage_plan]])]="1"
+    ##### 음주처리######################################################
+    음주전처리jc = 음주전처리()
+    if 음주전처리jc[f_user.mb_drink_yn] in 음주전처리jc :
+        globals()['data'+str(음주전처리jc[음주전처리jc[f_user.mb_drink_yn]])]="1"
+    ######운동전처리 ###############################################################
+    운동전처리jc = 운동전처리()
+    if 운동전처리jc[f_user.mb_health] in 운동전처리jc :
+        globals()['data'+str(운동전처리jc[운동전처리jc[f_user.mb_health]])]="1"
+    ####### 흡연전처리 #######################################################
+    흡연전처리jc = 흡연전처리()
+   
+    if 흡연전처리jc[f_user.mb_smoke_yn] in 흡연전처리jc :
+        globals()['data'+str(흡연전처리jc[흡연전처리jc[f_user.mb_smoke_yn]])]="1"
+    ############## 지역전처리###############################################
+    지역전처리jc = 지역전처리()
+    if 지역전처리jc[f_user.mb_region] in 지역전처리jc :
+        globals()['data'+str(지역전처리jc[지역전처리jc[f_user.mb_region]])]="1"
 
+    arr = np.array([[data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14,data15,data16,data17,data18,data19,data20,data21,data22,data23,data24,data25,data26,data27,data28,data29,data30,data31,data32,data33,data34,data35,data36,data37,data38,data39,data40,data41,data42,data43,data44,data45,data46,data47,data48,data49,data50,data51,data52,data53,data54,data55,data56,data57,data58,data59,data60,data61]])
+    print(arr)
+
+    if user성별=="m":
+        pred = man.predict(arr)
+        pred=pred.astype(int)
+        print(pred)
+    else :
+        pred = woman.predict(arr)
+        pred=pred.astype(int)
+        print(pred)
+
+    회원1 = pred[0]##### 문자열로변환    
+###쿼리문#####@@@@@@@@@@@@@@@@@@@@@@@@
+    sql회원정보 = f"select * from t_members where mb_no='{회원1}'"
+    cursor.execute(query=sql회원정보)
+    result1 = cursor.fetchall()
+    디비정보 =result1
+    print(디비정보)
+    # DB를 리스트안에 딕셔너리로 빼오기
+    no_user =ChainMap(*디비정보)
+    sql회원이미지 = f"select * from t_image where img_no='{39}'" ### 일단 있는이미지 넣었음
+    cursor.execute(query=sql회원이미지)
+    result2 = cursor.fetchall()
+    디비이미지 =result2
+    print(디비이미지)
+    no_image =ChainMap(*디비이미지)
+   
+
+    ### 리스트안 딕셔너리 데이터 찾을려고
+ 
+    usernick = no_user['mb_no']
+    userregion = 지역()[no_user['mb_region']]
+    userjob = 직업()[no_user['mb_job']]
+    userimage1 = no_image['mb_image1']
+
+    print(usernick)
+    print(userregion)
+    print(userjob)
+    print(userimage1)
+    
+
+    return {'nickname': usernick, 'region': userregion , "job" : userjob , "image" : userimage1}  # 머신러닝 준비중
 # 여기는 나중에 코드 줄여야겠당
 
 # -------------이미지 s3 저장 및 웹으로 보내기 -------------------------------'
