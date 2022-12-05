@@ -6,7 +6,7 @@ from typing import List
 from starlette.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 from db import session
-from model import t_member, t_login, t_user, t_image
+from model import t_member, t_login,  t_image
 import jwt
 import time
 from datetime import datetime
@@ -353,32 +353,44 @@ async def delete_user(info: dict):
     session.delete(user)
     session.commit()
 
-    # ------------------------- 피클 받는 과정 연습 ----------------------
+ # ---------------- 유저 정보 수정 및 정보 보여주는 창 ----------------------
 
-    # @app.get("/")
-    # async def create_user():
-    #     # data = pickle.load(open("test.pkl", 'rb'))
-    #     user = session.query(t_member).filter((t_member.mb_no == "13")).first()
-    #     gender = 성별()
-    #     region = 지역()
-    #     regionuser = 지역상세()
-    #     alcohol = 음주()
-    #     somke = 흡연()
-    #     religion = 종교()
-    #     # job=직업()
-    #     # print(user.mb_nickname)
-    #     print(gender[user.mb_gender])
-    #     # print(user.mb_birthdate)
-    #     # print(region[user.mb_region])
-    #     # print(regionuser[user.mb_region_more])
-    #     # print(user.mb_height)
-    #     # print(user.mb_weight)
-    #     # print(alcohol[user.mb_drinking_yn])
-    #     # print(somke[user.mb_smoking_yn])
-    #     # print(religion[user.mb_religion])
-    #     # print(job[user.mb_job])
 
-    #     return gender[user.mb_gender]
+@app.post("/user-setting/user-information-modify")
+async def post_user(info: dict):
+    info["email"] = info["email"].replace('"', '', 2)
+    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
+
+    gender = 성별()[user.mb_gender]
+
+    return {"gender": gender}
+    # ------------------------- 메인페이지 유저 정보 보내기----------------------
+
+
+# @app.post("/")
+# async def user(info: dict):
+#     info["email"] = info["email"].replace('"', '', 2)
+#     user = session.query(t_member).filter((t_member.mb_no ==)).first()
+#     gender = 성별()
+#     region = 지역()
+#     regionuser = 지역상세()
+#     alcohol = 음주()
+#     somke = 흡연()
+#     religion = 종교()
+#     job=직업()
+#     print(user.mb_nickname)
+#     print(gender[user.mb_gender])
+    # print(user.mb_birthdate)
+    # print(region[user.mb_region])
+    # print(regionuser[user.mb_region_more])
+    # print(user.mb_height)
+    # print(user.mb_weight)
+    # print(alcohol[user.mb_drinking_yn])
+    # print(somke[user.mb_smoking_yn])
+    # print(religion[user.mb_religion])
+    # print(job[user.mb_job])
+
+    # return gender[user.mb_gender]
 
     # if __name__ == '__main__':
     #     uvicorn .run(app, host="0.0.0.0", port=8000)
