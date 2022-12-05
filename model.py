@@ -24,7 +24,7 @@ class t_member(Base):
     mb_profile = Column(String(500), nullable=False)
     mb_job = Column(String(45), nullable=False)
     mb_job_more = Column(String(45), nullable=False)
-    mb_salary = Column(String(45), nullable=True)
+    mb_salary = Column(Integer, nullable=True)
     mb_height = Column(String(45), nullable=True)
     mb_weight = Column(String(45), nullable=True)
     mb_religion = Column(String(45), nullable=True)
@@ -35,16 +35,16 @@ class t_member(Base):
     mb_hobby = Column(String(45), nullable=True)
     mb_marriage_plan = Column(String(45), nullable=True)
     mb_fashion = Column(String(45), nullable=True)
-    mb_asset = Column(String(45), nullable=True)
+    mb_asset = Column(String(30), nullable=True)
     mb_food = Column(String(60), nullable=True)
-    mb_smoke_yn = Column(String(45), nullable=True)
-    mb_drink_yn = Column(String(45), nullable=True)
+    mb_smoke_yn = Column(String(10), nullable=True)
+    mb_drink_yn = Column(String(10), nullable=True)
     mb_health = Column(String(45), nullable=True)
     mb_joindate = Column(DateTime, nullable=True)
     mb_info_update = Column(DateTime, nullable=True)
     mb_age = Column(String(45), nullable=True)
     mb_ideal = Column(String(500), nullable=False)
-    mb_bloodtype = Column(String(45), nullable=False)
+    mb_bloodtype = Column(Integer, nullable=False)
 
     # login = relationship("t_login", back_populates="member", uselist=False)
     mail = relationship("t_login", back_populates="email")
@@ -65,7 +65,7 @@ class member(BaseModel):
     mb_profile = str
     mb_job = str
     mb_job_more = str
-    mb_salary = str
+    mb_salary = Integer
     mb_height = str
     mb_weight = str
     mb_religion = str
@@ -85,7 +85,7 @@ class member(BaseModel):
     mb_info_update = str
     mb_age = str
     mb_ideal = str
-    mb_bloodtype = str
+    mb_bloodtype = int
 
 # 유저 데이터 30000개 테이블
 # class t_user(Base):

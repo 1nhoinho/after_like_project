@@ -185,7 +185,7 @@ async def create_member(info: dict) -> dict:
         # 차량
         user2.mb_car = info["vehicle"]
         # 혈액형
-        user2.mb_bloodtype = info["bloodType"]
+        user2.mb_bloodtype = info["blood"]
         # 운동
         user2.mb_health = info["health"]
         # 가입 시간
@@ -244,7 +244,7 @@ async def create_member(info: dict) -> dict:
     mb_data.append(f_user.mb_drink_yn)
     mb_data.append(f_user.mb_health)
     mb_data.append(f_user.mb_age)
-    print(np.array([mb_data]))
+    # print(np.array([mb_data]))
 
     return {'data': 'ㅋㅋ'}, mb_data  # 머신러닝 준비중
 
@@ -376,15 +376,15 @@ async def post_user(info: dict):
     # 운동
     health = 운동()[user.mb_health]
     # 음주
-    drink = 음주()[user.mb_drink]
+    drink = 음주()[user.mb_drink_yn]
     # 흡연
-    smoke = 흡연()[user.mb_smoke]
+    smoke = 흡연()[user.mb_smoke_yn]
     # 결혼유무
-    married = 결혼유무()[user.mb_married]
+    married = 결혼유무()[user.mb_marriage_yn]
     # 결혼계획
     married_plan = 결혼계획()[user.mb_marriage_plan]
     # 학력
-    education = 학력()[user.mb_education]
+    education = 학력()[user.mb_academic]
     # 직업
     job = 직업()[user.mb_job]
     # 연봉
@@ -397,14 +397,12 @@ async def post_user(info: dict):
     # 이미지 테이블 이미지 불러오기
     user2 = user.mb_no
     u_image = session.query(t_image).filter_by(mb_no=user2).first()
-    image1 = u_image.image1
-    image2 = u_image.image2
-    image3 = u_image.image3
-    image4 = u_image.image4
-    image5 = u_image.image5
-    image6 = u_image.image6
-
-    print(nickname, gender, birth)
+    image1 = u_image.mb_image1
+    image2 = u_image.mb_image2
+    image3 = u_image.mb_image3
+    image4 = u_image.mb_image4
+    image5 = u_image.mb_image5
+    image6 = u_image.mb_image6
 
     return {"nickname": nickname, "gender": gender, "birth": birth, "region": region,
             "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
