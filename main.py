@@ -362,8 +362,9 @@ async def post_user(info: dict):
     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
 
     gender = 성별()[user.mb_gender]
+    birth = user.mb_birthdate
 
-    return {"gender": gender}
+    return {f"gender": {gender}, "birth": {birth}}
     # ------------------------- 메인페이지 유저 정보 보내기----------------------
 
 
