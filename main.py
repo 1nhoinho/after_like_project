@@ -662,7 +662,7 @@ async def create_user(info: dict) -> dict:
             # result2 = cursor.fetchall()
             # 메인디비이미지 =result2
             # print(메인디비이미지)
-            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"brith": 메인디비정보[i]['mb_birthdate'],"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
+            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": 메인디비정보[i]['mb_birthdate'],"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
             data.append(globals()['user_'+str(i)])
         # 메인회원이미지 = f"select * from t_image where img_no='{39}'"
         # cursor.execute(query=메인회원이미지)
@@ -677,7 +677,7 @@ async def create_user(info: dict) -> dict:
         result1 = cursor.fetchall()
         메인디비정보 =result1
         for i in range(0,20):
-            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"brith": 메인디비정보[i]['mb_birthdate'],"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 여자외모()[메인디비정보[i]["mb_style"]], "character" : 여자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
+            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": 메인디비정보[i]['mb_birthdate'],"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 여자외모()[메인디비정보[i]["mb_style"]], "character" : 여자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
         
             # print(메인디비정보[i]["mb_nickname"],메인디비정보[i]['mb_birthdate'],메인디비정보[i]['mb_region'],메인디비정보[i]["mb_style"], 메인디비정보[i]['mb_character'],메인디비정보[i]['mb_profile'], 메인디비정보[i]['mb_ideal'])
         # 메인회원이미지 = f"select * from t_image where img_no='{39}'"
@@ -693,21 +693,17 @@ async def create_user(info: dict) -> dict:
 
 
 # 메인페이지 좋아요 보내면 DB에 데이터 저장하기
-@app.post("/")
+@app.put("/")
 async def user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
-    user = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
-    # like_user = session.query(t_member).filter(t_member.mb_nickname == info["nickname"]).first()
-    like = t_like
-    like.like_mb_no = user.mb_no
-    # t_like.like_user_no = like_user.mb_no
-    like.like_time = time.localtime()
+    user = session.query(t_login).filter(t_login.mb_email == info["email"]).first()
 
-    session.add(like)
-    session.commit()
-
+        
     return "good"
-    
+        # mb.mb_no = lg.mb_no
+        # mb.mb_email = lg.mb_email
+        # session.add(mb)
+        # session.commit()
 
 
 
