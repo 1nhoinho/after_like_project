@@ -557,6 +557,18 @@ async def post_user(info: dict):
              "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
                        "image5": image5, "image6": image6}}]
 
+@app.get("/user-setting/user-information-modify")
+async def get_user(info: dict):
+    info["email"] = info["email"].replace('"', '', 2)
+    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
+    profile = user.mb_profile
+    ideal = user.mb_ideal
+    print(profile ,ideal)
+    if user :
+        return {"introduce": profile, "wanted": ideal}
+    else :
+        pass
+
 # 프론트에서 나의 이상형, 자기소개글 정보 받기
 @app.put("/user-setting/user-information-modify")
 async def put_user(info: dict):
@@ -580,17 +592,17 @@ async def put_user(info: dict):
 
     return "good"
 
-@app.get("/user-setting/user-information-modify")
-async def get_user(info: dict):
-    info["email"] = info["email"].replace('"', '', 2)
-    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-    profile = user.mb_profile
-    ideal = user.mb_ideal
-    print(profile ,ideal)
-    if user :
-        return {"introduce": profile, "wanted": ideal}
-    else :
-        pass
+# @app.get("/user-setting/user-information-modify")
+# async def get_user(info: dict):
+#     info["email"] = info["email"].replace('"', '', 2)
+#     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
+#     profile = user.mb_profile
+#     ideal = user.mb_ideal
+#     print(profile ,ideal)
+#     if user :
+#         return {"introduce": profile, "wanted": ideal}
+#     else :
+#         pass
 
 # 프로필 수정에서 자기소개글 정보 넣기
 # @app.put("/user-setting/user-information-modify")
