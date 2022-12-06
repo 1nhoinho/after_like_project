@@ -441,18 +441,67 @@ async def delete_user(info: dict):
 
 
 # 회원 정보창에 프로필 정보 넘겨주기 ----------------------------------------------
-@app.post("/user-setting")
-async def delete_user(info: dict):
-    info["email"] = info["email"].replace('"', '', 2)
-    email = info["email"]
-    # user1 = session.query(t_member).filter_by(mb_email=info["email"]).first()
+# @app.post("/user-setting")
+# async def delete_user(info: dict):
+#     info["email"] = info["email"].replace('"', '', 2)
+#     email = info["email"]
+#     # user1 = session.query(t_member).filter_by(mb_email=info["email"]).first()
 
-    user = f"select * from t_members where mb_no='{email}'"
-    cursor.execute(query=user)
-    result1 = cursor.fetchall()
-    user_data =result1
-    print(user_data)
+#     user = f"select * from t_members where mb_no='{email}'"
+#     cursor.execute(query=user)
+#     result1 = cursor.fetchall()
+#     user_data =result1
+#     print(user_data)
+@app.post("/user-setting")
+async def post_user(info: dict):
+    info["email"] = info["email"].replace('"', '', 2)
+    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
+    # 닉네임
+    nickname = user.mb_nickname
+    # 성별
+    gender = 성별()[user.mb_gender]
+    # 지역
+    region = 지역()[user.mb_region]
+    # 직업
+    job = 직업()[user.mb_job]
+    # 외모
+    style = user.mb_style.split(",")[0]
+    if user.mb_gender == 'm':
+        style = 남자외모()[user.mb_style]
+    else:
+        style = 여자외모()[user.mb_style]
+        return style
+    # 패션
+    fashion = user.mb_fashion.split(",")
+    fashionlist = []
+    if user.mb_gender == "m":
+        for i in fashion:
+            a = 남자패션()[i]
+            fashionlist.append(a)
+    else:
+        for i in fashion:
+            a = 여자패션()[i]
+            fashionlist.append(a)
+        return fashionlist
+    # 성격
+    character = user.mb_character.split(",")
+    characterlist = []
+    if user.mb_gender == "m":
+        for i in character:
+            a = 남자성격()[i]
+            characterlist.append(a)
+    else:
+        for i in character:
+            a = 여자성격()[i]
+            characterlist.append(a)
+        return characterlist
+    # 자기소개
+    profile = user.mb_profile
+    # 이상형
+    ideal = user.mb_ideal
     
+    return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
+     "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal}]
 
  # ---------------- 유저 정보 수정 및 정보 보여주는 창 ----------------------
 @app.post("/user-setting/user-information-modify")
@@ -587,84 +636,71 @@ async def put_user(info: dict):
 
 
 # 프로필 정보 세팅창 데이터 보내주기
-@app.post("/user-setting")
-async def post_user(info: dict):
+# @app.post("/user-setting")
+# async def post_user(info: dict):
+#     info["email"] = info["email"].replace('"', '', 2)
+#     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
+#     # 닉네임
+#     nickname = user.mb_nickname
+#     # 성별
+#     gender = 성별()[user.mb_gender]
+#     # 지역
+#     region = 지역()[user.mb_region]
+#     # 직업
+#     job = 직업()[user.mb_job]
+#     # 외모
+#     style = user.mb_style.split(",")[0]
+#     if user.mb_gender == 'm':
+#         style = 남자외모()[user.mb_style]
+#     else:
+#         style = 여자외모()[user.mb_style]
+#         return style
+#     # 패션
+#     fashion = user.mb_fashion.split(",")
+#     fashionlist = []
+#     if user.mb_gender == "m":
+#         for i in fashion:
+#             a = 남자패션()[i]
+#             fashionlist.append(a)
+#     else:
+#         for i in fashion:
+#             a = 여자패션()[i]
+#             fashionlist.append(a)
+#         return fashionlist
+#     # 성격
+#     character = user.mb_character.split(",")
+#     characterlist = []
+#     if user.mb_gender == "m":
+#         for i in character:
+#             a = 남자성격()[i]
+#             characterlist.append(a)
+#     else:
+#         for i in character:
+#             a = 여자성격()[i]
+#             characterlist.append(a)
+#         return characterlist
+#     # 자기소개
+#     profile = user.mb_profile
+#     # 이상형
+#     ideal = user.mb_ideal
+    
+#     return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
+#      "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal}]
+
+
+
+@app.put("/")
+async def user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-    # 닉네임
-    nickname = user.mb_nickname
-    # 성별
-    gender = 성별()[user.mb_gender]
-    # 지역
-    region = 지역()[user.mb_region]
-    # 직업
-    job = 직업()[user.mb_job]
-    # 외모
-    style = user.mb_style.split(",")[0]
-    if user.mb_gender == 'm':
-        style = 남자외모()[user.mb_style]
-    else:
-        style = 여자외모()[user.mb_style]
-        return style
-    # 패션
-    fashion = user.mb_fashion.split(",")
-    fashionlist = []
-    if user.mb_gender == "m":
-        for i in fashion:
-            a = 남자패션()[i]
-            fashionlist.append(a)
-    else:
-        for i in fashion:
-            a = 여자패션()[i]
-            fashionlist.append(a)
-        return fashionlist
-    # 성격
-    character = user.mb_character.split(",")
-    characterlist = []
-    if user.mb_gender == "m":
-        for i in character:
-            a = 남자성격()[i]
-            characterlist.append(a)
-    else:
-        for i in character:
-            a = 여자성격()[i]
-            characterlist.append(a)
-        return characterlist
-    # 자기소개
-    profile = user.mb_profile
-    # 이상형
-    ideal = user.mb_ideal
+    like_user = session.query(t_member).filter_by(mb_nickname=info["nickname"]).first()
     
-    return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
-     "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal}]
-    # ------------------------- 메인페이지 유저 정보 보내기----------------------
 
 
-# @app.post("/")
-# async def user(info: dict):
-#     info["email"] = info["email"].replace('"', '', 2)
-#     user = session.query(t_member).filter((t_member.mb_no ==)).first()
-#     gender = 성별()
-#     region = 지역()
-#     regionuser = 지역상세()
-#     alcohol = 음주()
-#     somke = 흡연()
-#     religion = 종교()
-#     job=직업()
-#     print(user.mb_nickname)
-#     print(gender[user.mb_gender])
-    # print(user.mb_birthdate)
-    # print(region[user.mb_region])
-    # print(regionuser[user.mb_region_more])
-    # print(user.mb_height)
-    # print(user.mb_weight)
-    # print(alcohol[user.mb_drinking_yn])
-    # print(somke[user.mb_smoking_yn])
-    # print(religion[user.mb_religion])
-    # print(job[user.mb_job])
 
-    # return gender[user.mb_gender]
+
 
     # if __name__ == '__main__':
     #     uvicorn .run(app, host="0.0.0.0", port=8000)
     #     pass
+
