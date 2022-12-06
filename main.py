@@ -557,30 +557,33 @@ async def post_user(info: dict):
              "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
                        "image5": image5, "image6": image6}}]
 
-# 프로필 수정에서 나의 이상형 정보 넣기
-@app.put("/user-setting/user-information-modify/wanted")
+# 프로필 수정에서 나의 이상형, 자기소개글 정보 정보 넣기
+@app.get("/user-setting/user-information-modify")
 async def put_user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
     user.mb_ideal = info["wanted"]
     ideal = user.mb_ideal
-    
-    session.add(user)
-    session.commit()
-
-    return {"wanted" : ideal}
-# 프로필 수정에서 자기소개글 정보 넣기
-@app.put("/user-setting/user-information-modify/introduce")
-async def put_user(info: dict):
-    info["email"] = info["email"].replace('"', '', 2)
-    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
     user.mb_profile = info["introduce"]
     profile = user.mb_profile
-
+    print(ideal, profile)
+    
     session.add(user)
     session.commit()
+
+    return {"wanted" : ideal, "introduce" : profile}
+# 프로필 수정에서 자기소개글 정보 넣기
+# @app.put("/user-setting/user-information-modify")
+# async def put_user(info: dict):
+#     info["email"] = info["email"].replace('"', '', 2)
+#     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
+#     user.mb_profile = info["introduce"]
+#     profile = user.mb_profile
+
+#     session.add(user)
+#     session.commit()
     
-    return {"introduce" : profile}
+#     return {"introduce" : profile}
     
 
 
