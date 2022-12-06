@@ -630,6 +630,68 @@ async def put_user(info: dict):
     return "good"
 
 
+# 메인페이지
+m="m"
+f="f"
+############################ 랜덤데이터 쏴주기 ~@#######################################
+@app.post("/")#### 여성이면 남성데이터 쏴주고 남성이면 남성데이터 쏴주기 ###################################
+async def create_user(info: dict) -> dict:
+    info["email"] = info["email"].replace('"', '', 2)
+    # print(info["email"])## 현유저 이메일
+    user22 = session.query(t_login).filter(
+        (t_login.mb_email == info["email"])).first()  # 단일 사용자
+    userno=user22.mb_no 
+    # print(userno) ## 현유저 넘버
+    현사용자 = session.query(t_member).filter(
+        (t_member.mb_no ==  userno)).first()  # 단일 사용자
+  
+    
+    if 현사용자.mb_gender=="f":
+        #메인회원정보s = f"select * from t_members order by mb_no desc limit 20"
+        메인회원정보s = f"select * from t_members where mb_gender='{m}' order by mb_no desc limit 20"
+        cursor.execute(query=메인회원정보s)
+        result1 = cursor.fetchall()
+        메인디비정보 =result1
+        # 메인디비정보[i]["mb_no"] ###############################이미지 디비 할려고##### 지우지마
+        data = []
+        for i in range(0,20):
+            # globals()['usermbno'+str(i)] = 메인디비정보[i]["mb_no"]
+            # globals()['userimg'+str(i)] = f"select * from t_image where img_no='{globals()['usermbno'+str(i)] }'"
+            # print(globals()['userimg'+str(i)])
+            # cursor.execute(query=globals()['userimg'+str(i)])
+            # result2 = cursor.fetchall()
+            # 메인디비이미지 =result2
+            # print(메인디비이미지)
+            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"brith": 메인디비정보[i]['mb_birthdate'],"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
+            data.append(globals()['user_'+str(i)])
+        # 메인회원이미지 = f"select * from t_image where img_no='{39}'"
+        # cursor.execute(query=메인회원이미지)
+        # result2 = cursor.fetchall()
+        # 메인디비이미지 =result2
+        # print(메인디비이미지)
+            
+        
+    else :
+        메인회원정보s = f"select * from t_members where mb_gender='{f}' order by mb_no desc limit 20"
+        cursor.execute(query=메인회원정보s)
+        result1 = cursor.fetchall()
+        메인디비정보 =result1
+        for i in range(0,20):
+            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"brith": 메인디비정보[i]['mb_birthdate'],"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 여자외모()[메인디비정보[i]["mb_style"]], "character" : 여자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
+        
+            # print(메인디비정보[i]["mb_nickname"],메인디비정보[i]['mb_birthdate'],메인디비정보[i]['mb_region'],메인디비정보[i]["mb_style"], 메인디비정보[i]['mb_character'],메인디비정보[i]['mb_profile'], 메인디비정보[i]['mb_ideal'])
+        # 메인회원이미지 = f"select * from t_image where img_no='{39}'"
+        # cursor.execute(query=메인회원이미지)
+        # result2 = cursor.fetchall()
+        # 메인디비이미지 =result2
+        # print(메인디비이미지)
+    #{user,0,user_1 ,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14,user_15,user_16,user_17,user_18,user_19}
+    
+            
+    return user_0,user_1 ,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14,user_15,user_16,user_17,user_18,user_19 
+
+
+
 # 메인페이지 좋아요 보내면 DB에 데이터 저장하기
 @app.post("/")
 async def user(info: dict):
