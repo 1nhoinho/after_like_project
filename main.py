@@ -440,6 +440,21 @@ async def delete_user(info: dict):
     session.delete(user)
     session.commit()
 
+
+# 회원 정보창에 프로필 정보 넘겨주기 ----------------------------------------------
+@app.post("/user-setting")
+async def delete_user(info: dict):
+    info["email"] = info["email"].replace('"', '', 2)
+    email = info["email"]
+    # user1 = session.query(t_member).filter_by(mb_email=info["email"]).first()
+
+    user = f"select * from t_members where mb_no='{email}'"
+    cursor.execute(query=user)
+    result1 = cursor.fetchall()
+    user_data =result1
+    print(user_data)
+    
+
  # ---------------- 유저 정보 수정 및 정보 보여주는 창 ----------------------
 
 
