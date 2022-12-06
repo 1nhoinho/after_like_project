@@ -695,13 +695,31 @@ async def create_user(info: dict) -> dict:
 
 
 # 메인페이지 좋아요 보내면 DB에 데이터 저장하기
+# @app.put("/")
+# async def user(info: dict):
+#     info["email"] = info["email"].replace('"', '', 2)
+#     user = session.query(t_login).filter(t_login.mb_email == info["email"]).first()
+
+
+        
+#     return "good"
+
 @app.put("/")
 async def user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
-    user = session.query(t_login).filter(t_login.mb_email == info["email"]).first()
-
-        
-    return "good"
+    현user = session.query(t_login).filter(t_login.mb_email == info["email"]).first()
+    당한  =   session.query(t_member).filter(t_member.mb_nickname == info["username"]).first()
+    print(type(현user.mb_no))
+    print(type(현user.mb_no))
+    현 = 현user.mb_no
+    당 = 당한.mb_no
+    abc = t_like()
+    abc.like_mb_no= 현
+    abc.like_user_no = 당
+    abc.like_time = time.localtime()
+ 
+    session.add(abc)
+    session.commit()
         # mb.mb_no = lg.mb_no
         # mb.mb_email = lg.mb_email
         # session.add(mb)
