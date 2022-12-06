@@ -6,7 +6,7 @@ from typing import List
 from starlette.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 from db import session
-from model import t_member, t_login,  t_image
+from model import t_member, t_login,  t_image, t_like
 import jwt
 import time
 from datetime import datetime
@@ -149,7 +149,7 @@ async def create_member(info: dict) -> dict:
         # 성별
         user2.mb_gender = info["gender"]
         # 생년
-        user2.mb_birthdate = info["birth"]
+        user2.mb_birthdate = info["birth"][0:4]
         #닉네임
         user2.mb_nickname = info["nickname"]
         # 지역
@@ -441,17 +441,6 @@ async def delete_user(info: dict):
 
 
 # 회원 정보창에 프로필 정보 넘겨주기 ----------------------------------------------
-# @app.post("/user-setting")
-# async def delete_user(info: dict):
-#     info["email"] = info["email"].replace('"', '', 2)
-#     email = info["email"]
-#     # user1 = session.query(t_member).filter_by(mb_email=info["email"]).first()
-
-#     user = f"select * from t_members where mb_no='{email}'"
-#     cursor.execute(query=user)
-#     result1 = cursor.fetchall()
-#     user_data =result1
-#     print(user_data)
 @app.post("/user-setting")
 async def post_user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
@@ -507,6 +496,8 @@ async def post_user(info: dict):
     
     return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
      "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal, "image": image1}]
+
+
 
  # ---------------- 유저 정보 수정 및 정보 보여주는 창 ----------------------
 @app.post("/user-setting/user-information-modify")
@@ -639,67 +630,21 @@ async def put_user(info: dict):
     return "good"
 
 
-
-# 프로필 정보 세팅창 데이터 보내주기
-# @app.post("/user-setting")
-# async def post_user(info: dict):
-#     info["email"] = info["email"].replace('"', '', 2)
-#     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-#     # 닉네임
-#     nickname = user.mb_nickname
-#     # 성별
-#     gender = 성별()[user.mb_gender]
-#     # 지역
-#     region = 지역()[user.mb_region]
-#     # 직업
-#     job = 직업()[user.mb_job]
-#     # 외모
-#     style = user.mb_style.split(",")[0]
-#     if user.mb_gender == 'm':
-#         style = 남자외모()[user.mb_style]
-#     else:
-#         style = 여자외모()[user.mb_style]
-#         return style
-#     # 패션
-#     fashion = user.mb_fashion.split(",")
-#     fashionlist = []
-#     if user.mb_gender == "m":
-#         for i in fashion:
-#             a = 남자패션()[i]
-#             fashionlist.append(a)
-#     else:
-#         for i in fashion:
-#             a = 여자패션()[i]
-#             fashionlist.append(a)
-#         return fashionlist
-#     # 성격
-#     character = user.mb_character.split(",")
-#     characterlist = []
-#     if user.mb_gender == "m":
-#         for i in character:
-#             a = 남자성격()[i]
-#             characterlist.append(a)
-#     else:
-#         for i in character:
-#             a = 여자성격()[i]
-#             characterlist.append(a)
-#         return characterlist
-#     # 자기소개
-#     profile = user.mb_profile
-#     # 이상형
-#     ideal = user.mb_ideal
-    
-#     return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
-#      "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal}]
-
-
-
-@app.put("/")
+# 메인페이지 좋아요 보내면 DB에 데이터 저장하기
+@app.post("/")
 async def user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
     user = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
-    like_user = session.query(t_member).filter(t_member.mb_nickname== info["nickname"]).first()
-    user
+    # like_user = session.query(t_member).filter(t_member.mb_nickname == info["nickname"]).first()
+    like = t_like
+    like.like_mb_no = user.mb_no
+    # t_like.like_user_no = like_user.mb_no
+    like.like_time = time.localtime()
+
+    session.add(like)
+    session.commit()
+
+    return "good"
     
 
 
