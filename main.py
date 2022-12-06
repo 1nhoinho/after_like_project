@@ -59,8 +59,6 @@ mb_data1 = []
 
 # ------------------------ 회원가입 !-----------------------------------------
 login = []
-
-
 @app.post("/login/easy-auth/sign-up")
 async def create_user(info: dict) -> dict:
     member = session.query(t_login.mb_no).filter().first()
@@ -120,7 +118,7 @@ async def add_login(info: dict):  # 가입정보를 딕셔너리 형태로 받�
         return {"isAuthenticated": True, "email": info["email"]}
 
 
-# ------------------------상세정보 입력----------------------------------------------
+
 ## 닉네임 중복 처리 기능.
 @app.post("/user-data-input/doubleCheck")
 async def create_member(info: dict) -> dict:
@@ -135,6 +133,8 @@ async def create_member(info: dict) -> dict:
         print("zz")
         return {"doubleCheck" : True}
 
+
+# ------------------------상세정보 입력----------------------------------------------
 @app.put("/user-data-input")
 async def create_member(info: dict) -> dict:
 
@@ -334,9 +334,8 @@ async def create_member(info: dict) -> dict:
     return {'nickname': usernick, 'region': userregion , "job" : userjob , "image" : userimage1}  # 머신러닝 준비중
 # 여기는 나중에 코드 줄여야겠당
 
+
 # -------------이미지 s3 저장 및 웹으로 보내기 -------------------------------'
-
-
 @app.put("/user-data-input/user-image-input")
 async def create_image(info: dict):
 
@@ -456,8 +455,6 @@ async def delete_user(info: dict):
     
 
  # ---------------- 유저 정보 수정 및 정보 보여주는 창 ----------------------
-
-
 @app.post("/user-setting/user-information-modify")
 async def post_user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
@@ -561,22 +558,13 @@ async def post_user(info: dict):
              "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
                        "image5": image5, "image6": image6}}]
 
-# @app.get("/user-setting/user-information-modify")
-# async def get_user(info: dict):
-#     info["email"] = info["email"].replace('"', '', 2)
-#     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-#     profile = user.mb_profile
-#     ideal = user.mb_ideal
-#     print(profile ,ideal)
-#     if user :
-#         return {"introduce": profile, "wanted": ideal}
-#     else :
-#         pass
+
 
 # 프론트에서 나의 이상형, 자기소개글 정보 받기
 @app.put("/user-setting/user-information-modify")
 async def put_user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
+    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
     if info["wanted"] == None :
         pass
     else :
@@ -596,33 +584,59 @@ async def put_user(info: dict):
 
     return "good"
 
-# @app.get("/user-setting/user-information-modify")
-# async def get_user(info: dict):
-#     info["email"] = info["email"].replace('"', '', 2)
-#     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-#     profile = user.mb_profile
-#     ideal = user.mb_ideal
-#     print(profile ,ideal)
-#     if user :
-#         return {"introduce": profile, "wanted": ideal}
-#     else :
-#         pass
 
-# 프로필 수정에서 자기소개글 정보 넣기
-# @app.put("/user-setting/user-information-modify")
-# async def put_user(info: dict):
-#     info["email"] = info["email"].replace('"', '', 2)
-#     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-#     user.mb_profile = info["introduce"]
-#     profile = user.mb_profile
 
-#     session.add(user)
-#     session.commit()
+# 프로필 정보 세팅창 데이터 보내주기
+@app.post("/user-setting")
+async def post_user(info: dict):
+    info["email"] = info["email"].replace('"', '', 2)
+    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
+    # 닉네임
+    nickname = user.mb_nickname
+    # 성별
+    gender = 성별()[user.mb_gender]
+    # 지역
+    region = 지역()[user.mb_region]
+    # 직업
+    job = 직업()[user.mb_job]
+    # 외모
+    style = user.mb_style.split(",")[0]
+    if user.mb_gender == 'm':
+        style = 남자외모()[user.mb_style]
+    else:
+        style = 여자외모()[user.mb_style]
+        return style
+    # 패션
+    fashion = user.mb_fashion.split(",")
+    fashionlist = []
+    if user.mb_gender == "m":
+        for i in fashion:
+            a = 남자패션()[i]
+            fashionlist.append(a)
+    else:
+        for i in fashion:
+            a = 여자패션()[i]
+            fashionlist.append(a)
+        return fashionlist
+    # 성격
+    character = user.mb_character.split(",")
+    characterlist = []
+    if user.mb_gender == "m":
+        for i in character:
+            a = 남자성격()[i]
+            characterlist.append(a)
+    else:
+        for i in character:
+            a = 여자성격()[i]
+            characterlist.append(a)
+        return characterlist
+    # 자기소개
+    profile = user.mb_profile
+    # 이상형
+    ideal = user.mb_ideal
     
-#     return {"introduce" : profile}
-    
-
-
+    return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
+     "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal}]
     # ------------------------- 메인페이지 유저 정보 보내기----------------------
 
 
