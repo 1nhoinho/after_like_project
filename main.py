@@ -494,6 +494,10 @@ async def post_user(info: dict):
     asset = 자산()[user.mb_asset]
     # 차량
     car = 차량()[user.mb_car]
+    # 자기소개
+    profile = user.mb_profile
+    # 이상형
+    ideal = user.mb_ideal
     # 외모
     style = user.mb_style.split(",")[0]
     if user.mb_gender == 'm':
@@ -552,22 +556,22 @@ async def post_user(info: dict):
     print(img_list)
     return [{"nickname": nickname, "gender": gender, "birth": birth, "region": region,
             "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
-             "married_plan": married_plan, "education": education, "job": job, "salary": salary,
+             "married_plan": married_plan, "education": education, "job": job, "salary": salary, "introduce": profile, "wanted" : ideal,
              "asset": asset, "car": car, "style": style, "fashion": fashionlist, "character": characterlist, "job_info": job_more,
              "image": {"image1": image1, "image2": image2, "image3": image3, "image4": image4,
                        "image5": image5, "image6": image6}}]
 
-@app.get("/user-setting/user-information-modify")
-async def get_user(info: dict):
-    info["email"] = info["email"].replace('"', '', 2)
-    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-    profile = user.mb_profile
-    ideal = user.mb_ideal
-    print(profile ,ideal)
-    if user :
-        return {"introduce": profile, "wanted": ideal}
-    else :
-        pass
+# @app.get("/user-setting/user-information-modify")
+# async def get_user(info: dict):
+#     info["email"] = info["email"].replace('"', '', 2)
+#     user = session.query(t_member).filter_by(mb_email=info["email"]).first()
+#     profile = user.mb_profile
+#     ideal = user.mb_ideal
+#     print(profile ,ideal)
+#     if user :
+#         return {"introduce": profile, "wanted": ideal}
+#     else :
+#         pass
 
 # 프론트에서 나의 이상형, 자기소개글 정보 받기
 @app.put("/user-setting/user-information-modify")
