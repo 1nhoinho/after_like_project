@@ -502,7 +502,8 @@ async def post_user(info: dict):
     # 이미지
     user2 = user.mb_no
     u_image = session.query(t_image).filter(t_image.mb_no == user2).first()
-    image1 = u_image.image1
+    image1 = u_image.mb_image1
+    print(image1)
     
     return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
      "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal, "image": image1}]
