@@ -499,9 +499,13 @@ async def post_user(info: dict):
     profile = user.mb_profile
     # 이상형
     ideal = user.mb_ideal
+    # 이미지
+    user2 = user.mb_no
+    u_image = session.query(t_image).filter(t_image.mb_no == user2).first()
+    image1 = u_image.image1
     
     return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
-     "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal}]
+     "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal, "image": image1}]
 
  # ---------------- 유저 정보 수정 및 정보 보여주는 창 ----------------------
 @app.post("/user-setting/user-information-modify")
@@ -692,8 +696,9 @@ async def put_user(info: dict):
 @app.put("/")
 async def user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
-    user = session.query(t_member).filter_by(mb_email=info["email"]).first()
-    like_user = session.query(t_member).filter_by(mb_nickname=info["nickname"]).first()
+    user = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
+    like_user = session.query(t_member).filter(t_member.mb_nickname== info["nickname"]).first()
+    user
     
 
 
