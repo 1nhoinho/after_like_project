@@ -682,7 +682,7 @@ async def put_user(info: dict):
 m="m"
 f="f"
 ############################ 랜덤데이터 쏴주기 ~@#######################################
-@app.post("/")#### 여성이면 남성데이터 쏴주고 남성이면 남성데이터 쏴주기 ###################################
+@app.post("/home")#### 여성이면 남성데이터 쏴주고 남성이면 남성데이터 쏴주기 ###################################
 async def create_user(info: dict) -> dict:
     info["email"] = info["email"].replace('"', '', 2)
     # print(info["email"])## 현유저 이메일
@@ -750,7 +750,7 @@ async def create_user(info: dict) -> dict:
     return user_0,user_1 ,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14,user_15,user_16,user_17
 
 # 메인페이지 좋아요 보내면 DB에 데이터 저장하기
-@app.put("/")
+@app.put("/home")
 async def user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
     현user = session.query(t_login).filter(t_login.mb_email == info["email"]).first()
