@@ -750,7 +750,6 @@ async def create_user(info: dict) -> dict:
             globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)]}
     
 
-
     return user_0,user_1 ,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14,user_15,user_16,user_17
 
 # 메인페이지 좋아요 보내면 DB에 데이터 저장하기
@@ -778,15 +777,28 @@ async def like_user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
     user = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
     u_mb_no = user.mb_no
-    likeuser = session.query(t_like).filter(t_like.like_mb_no == u_mb_no).all()
-    
-    # conn.cursor() as curs:
-    # sql = f"select l.like_user_no from t_member m, t_userlike l where l.like_mb_no = m.mb_no and m.mb_no = {u_mb_no}"
-    # curs.execute(sql)
-    # rs = curs.fetchall()
-    # print(row)
+    # likeuser = session.query(t_like).filter(t_like.like_mb_no == u_mb_no).first()
+    # image = session.query(t_image).filter(t_image.like_mb_no == u_mb_no).first()
 
-            
+
+    curs = conn.cursor(pymysql.cursors.SSCursor)
+    sql = f"select l.like_user_no from t_members m, t_userlike l, t_logins s where s.mb_no = {u_mb_no} and s.mb_no = l.like_mb_no group by l.like_user_no "
+    curs.execute(sql)
+    rs = curs.fetchall()
+    rows = [list(rs[x]) for x in range(len(rs))]
+    rows[0][0]
+    a = []
+    for i in range(len(rows)) :
+        user1 = session.query(t_member).filter(t_member.mb_no == rows[i][0]).first()
+        # u_mb_no1 = user1.mb_no
+        image = session.query(t_image).filter(t_image.mb_no== rows[i][0]).first()
+        globals()['user'+str(i)]={"nickname":user1.mb_nickname, "job": 직업()[user1.mb_job], "region" : 지역()[user1.mb_region],
+                                  "married": 결혼유무()[user1.mb_marriage_yn], "marriagePlan" : 결혼계획()[user1.mb_marriage_plan],
+                                  "image": image.mb_image1}
+        a.append(globals()['user'+str(i)])
+
+
+    return a        
 
 
 
