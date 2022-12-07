@@ -437,18 +437,25 @@ async def create_image(info: dict):
     # print(i_user.mb_image1)
     # print(i_user.mb_image2)
     i_list = []
+    # i_user.mb_image1 = img_list[0]
+    # i_user.mb_image2 = img_list[1]
+    # i_user.mb_image3 = img_list[2]
+    # i_user.mb_image4 = img_list[3]
+    # i_user.mb_image5 = img_list[4]
+    # i_user.mb_image6 = img_list[5]
     for i in img_list :
         if i == '' :
             i = 'default'
-            img_list.append(i)
+            i_list.append(i)
         else :
-            img_list.append(i)
-        i_user.mb_image1 = i_list[0]
-        i_user.mb_image2 = i_list[1]
-        i_user.mb_image3 = i_list[2]
-        i_user.mb_image4 = i_list[3]
-        i_user.mb_image5 = i_list[4]
-        i_user.mb_image6 = i_list[5]
+            i_list.append(i)
+    i_user.mb_image1 = i_list[0]
+    i_user.mb_image2 = i_list[1]
+    i_user.mb_image3 = i_list[2]
+    i_user.mb_image4 = i_list[3]
+    i_user.mb_image5 = i_list[4]
+    i_user.mb_image6 = i_list[5]
+
 
     session.add(i_user)
     session.commit()
