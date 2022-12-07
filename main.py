@@ -64,6 +64,11 @@ async def kakao_user(info: dict) -> dict:
     info["email"] = info["email"].replace('"', '', 2)
     print(info["email"])
     print(info["password"])
+    member = session.query(t_login).filter(
+        t_login.mb_email == info["email"]).first()
+    if member :
+        print( "isLogin")
+        return {"isLogin" : True}
     mb = t_member()
     im = t_image()
     lg = t_login()
@@ -85,10 +90,8 @@ async def kakao_user(info: dict) -> dict:
     session.add(mb)
     session.commit()
 
-    member = session.query(t_login).filter(
-        t_login.mb_no == mb.mb_no).first()
+
     print("아이디가 만들어졌습니다")
-    email = lg.mb_email
     return {"isReady": True}
 
 
