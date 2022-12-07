@@ -64,35 +64,39 @@ async def kakao_user(info: dict) -> dict:
     info["email"] = info["email"].replace('"', '', 2)
     print(info["email"])
     print(info["password"])
-    member = session.query(t_login).filter(
-        t_login.mb_email == info["email"]).first()
-    if member :
-        print( "isLogin")
-        return {"isLogin" : True}
-    mb = t_member()
-    im = t_image()
-    lg = t_login()
-    # lg.mb_name = info["nickname"]
-    lg.mb_email = info["email"]
-    lg.mb_pw = info["password"]
-  
+    user = session.query(t_login).filter(
+        (t_login.mb_email == info["email"])).first()  # 단일 사용자
 
-    session.add(lg)
-    session.commit()
+    if user:
+        print("아이디가 중복입니다.")
 
-    im.mb_no = lg.mb_no
+        return {"isLogin": True}
 
-    session.add(im)
-    session.commit()
+    else :
+        mb = t_member()
+        im = t_image()
+        lg = t_login()
+        # lg.mb_name = info["nickname"]
+        lg.mb_email = info["email"]
+        lg.mb_pw = info["password"]
+    
 
-    mb.mb_no = lg.mb_no
-    mb.mb_email = lg.mb_email
-    session.add(mb)
-    session.commit()
+        session.add(lg)
+        session.commit()
+
+        im.mb_no = lg.mb_no
+
+        session.add(im)
+        session.commit()
+
+        mb.mb_no = lg.mb_no
+        mb.mb_email = lg.mb_email
+        session.add(mb)
+        session.commit()
 
 
-    print("아이디가 만들어졌습니다")
-    return {"isReady": True}
+        print("아이디가 만들어졌습니다")
+        return {"isReady": True}
 
 
     # 일반 이메일 회원가입 #############################
