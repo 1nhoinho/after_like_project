@@ -222,6 +222,7 @@ async def create_member(info: dict) -> dict:
 
         session.add(user2)
         session.commit()
+        session.close()
         style = list(info["manAppearance"].values())
         return {"isCompleted": True}
 
@@ -423,6 +424,7 @@ async def delete_user(info: dict):
 
     session.delete(user1)
     session.commit()
+    session.close()
   # 이미지 테이블 유저 정보 삭제
     user = session.query(t_login).filter_by(mb_email=info["email"]).first()
     user.mb_no == t_image.mb_no
@@ -430,6 +432,7 @@ async def delete_user(info: dict):
 
     session.delete(user2)
     session.commit()
+    session.close()
   # 로그인 테이블 유저 정보 삭제
     user = session.query(t_login).filter_by(mb_email=info["email"]).first()
     user.mb_no == t_image.mb_no
@@ -438,6 +441,7 @@ async def delete_user(info: dict):
 
     session.delete(user)
     session.commit()
+    session.close()
 
 
 # 회원 정보창에 프로필 정보 넘겨주기 ----------------------------------------------
@@ -459,7 +463,7 @@ async def post_user(info: dict):
         style = 남자외모()[user.mb_style]
     else:
         style = 여자외모()[user.mb_style]
-        return style
+    print("style")
     # 패션
     fashion = user.mb_fashion.split(",")
     fashionlist = []
@@ -471,7 +475,6 @@ async def post_user(info: dict):
         for i in fashion:
             a = 여자패션()[i]
             fashionlist.append(a)
-        return fashionlist
     # 성격
     character = user.mb_character.split(",")
     characterlist = []
@@ -483,7 +486,6 @@ async def post_user(info: dict):
         for i in character:
             a = 여자성격()[i]
             characterlist.append(a)
-        return characterlist
     # 자기소개
     profile = user.mb_profile
     # 이상형
@@ -492,7 +494,8 @@ async def post_user(info: dict):
     user2 = user.mb_no
     u_image = session.query(t_image).filter(t_image.mb_no == user2).first()
     image1 = u_image.mb_image1
-    print(image1)
+    
+    print("style")
     
     return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
      "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal, "image": image1}]
@@ -664,7 +667,7 @@ async def create_user(info: dict) -> dict:
             # result2 = cursor.fetchall()
             # 메인디비이미지 =result2
             # print(메인디비이미지)
-            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": 메인디비정보[i]['mb_birthdate'],"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
+            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
             data.append(globals()['user_'+str(i)])
         # 메인회원이미지 = f"select * from t_image where img_no='{39}'"
         # cursor.execute(query=메인회원이미지)
@@ -694,16 +697,8 @@ async def create_user(info: dict) -> dict:
     return user_0,user_1 ,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14,user_15,user_16,user_17,user_18,user_19 
 
 
+
 # 메인페이지 좋아요 보내면 DB에 데이터 저장하기
-# @app.put("/")
-# async def user(info: dict):
-#     info["email"] = info["email"].replace('"', '', 2)
-#     user = session.query(t_login).filter(t_login.mb_email == info["email"]).first()
-
-
-        
-#     return "good"
-
 @app.put("/")
 async def user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
@@ -720,10 +715,13 @@ async def user(info: dict):
  
     session.add(abc)
     session.commit()
-        # mb.mb_no = lg.mb_no
-        # mb.mb_email = lg.mb_email
-        # session.add(mb)
-        # session.commit()
+    session.close()
+
+
+# @app.post("/like")
+# async def like_user(info: dict):
+#     user = session.query(t_like).filter(t_like.like_mb_no == info[
+
 
 
 
