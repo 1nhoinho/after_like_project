@@ -714,7 +714,7 @@ async def create_user(info: dict) -> dict:
             globals()['image'+str(i)] = (list(z['mb_image1'] for z in globals()['메인디비이미지'+str(i)]))
 
 
-            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)[0]]}
+            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)]}
             data.append(globals()['user_'+str(i)])
 
 
@@ -743,7 +743,7 @@ async def create_user(info: dict) -> dict:
             globals()['image'+str(i)] = (list(z['mb_image1'] for z in globals()['메인디비이미지'+str(i)]))
             print(globals()['image'+str(i)])
 
-            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)[0]]}
+            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)]}
     
 
 
