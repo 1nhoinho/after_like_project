@@ -61,6 +61,7 @@ login = []
 # ------------------------ 카카오 회원가입 !-----------------------------------------
 @app.post("/login/easy-auth")
 async def kakao_user(info: dict) -> dict:
+    info["email"] = info["email"].replace('"', '', 2)
     print(info["email"])
     print(info["password"])
     mb = t_member()
