@@ -61,7 +61,6 @@ login = []
 # ------------------------ 카카오 회원가입 !-----------------------------------------
 @app.post("/login/easy-auth")
 async def kakao_user(info: dict) -> dict:
-    info["email"] = info["email"].replace('"', '', 2)
     print(info["email"])
     print(info["password"])
     mb = t_member()
@@ -92,7 +91,7 @@ async def kakao_user(info: dict) -> dict:
     return {"isReady": True}
 
 
-    # 일반 이메일 회원가입 ########################
+    # 일반 이메일 회원가입 #############################
 @app.post("/login/easy-auth/sign-up")
 async def create_user(info: dict) -> dict:
     member = session.query(t_login.mb_no).filter().first()
@@ -433,12 +432,19 @@ async def create_image(info: dict):
     # print(globals()["i_user.mb_image"+str(i+1)])
     # print(i_user.mb_image1)
     # print(i_user.mb_image2)
-    i_user.mb_image1 = img_list[0]
-    i_user.mb_image2 = img_list[1]
-    i_user.mb_image3 = img_list[2]
-    i_user.mb_image4 = img_list[3]
-    i_user.mb_image5 = img_list[4]
-    i_user.mb_image6 = img_list[5]
+    i_list = []
+    for i in img_list :
+        if i == '' :
+            i = 'default'
+            img_list.append(i)
+        else :
+            img_list.append(i)
+        i_user.mb_image1 = i_list[0]
+        i_user.mb_image2 = i_list[1]
+        i_user.mb_image3 = i_list[2]
+        i_user.mb_image4 = i_list[3]
+        i_user.mb_image5 = i_list[4]
+        i_user.mb_image6 = i_list[5]
 
     session.add(i_user)
     session.commit()
