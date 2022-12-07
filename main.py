@@ -706,13 +706,13 @@ async def create_user(info: dict) -> dict:
         data = []
         for i in range(0,20):
             globals()['usermbno'+str(i)] = 메인디비정보[i]["mb_no"]
-            globals()['userimg'+str(i)] = f"select * from t_image where img_no='{globals()['usermbno'+str(i)] }'"
+            globals()['userimg'+str(i)] = f"select * from t_image where mb_no='{globals()['usermbno'+str(i)] }'"
             # print(globals()['userimg'+str(i)])
             cursor.execute(query=globals()['userimg'+str(i)])
             result2 = cursor.fetchall()
             globals()['메인디비이미지'+str(i)] =result2
             globals()['image'+str(i)] = (list(z['mb_image1'] for z in globals()['메인디비이미지'+str(i)]))
-        
+
 
             globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)[0]]}
             data.append(globals()['user_'+str(i)])
@@ -732,16 +732,16 @@ async def create_user(info: dict) -> dict:
         메인디비정보 =result1
         # print(메인디비정보)
         for i in range(0,20):
-            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 여자외모()[메인디비정보[i]["mb_style"]], "character" : 여자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal']}
+           
            
             globals()['usermbno'+str(i)] = 메인디비정보[i]["mb_no"]
-            globals()['userimg'+str(i)] = f"select * from t_image where img_no='{globals()['usermbno'+str(i)] }'"
+            globals()['userimg'+str(i)] = f"select * from t_image where mb_no='{globals()['usermbno'+str(i)] }'"
             # print(globals()['userimg'+str(i)])
             cursor.execute(query=globals()['userimg'+str(i)])
             result2 = cursor.fetchall()
             globals()['메인디비이미지'+str(i)] =result2
             globals()['image'+str(i)] = (list(z['mb_image1'] for z in globals()['메인디비이미지'+str(i)]))
-        
+            print(globals()['image'+str(i)])
 
             globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)[0]]}
     
