@@ -6,7 +6,7 @@ from typing import List
 from starlette.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 from db import session
-from model import t_member, t_login,  t_image, t_like
+from model import t_member, t_login,  t_image, t_like, t_like
 import jwt
 import time
 from datetime import datetime
@@ -17,7 +17,7 @@ import io
 import uuid
 import boto3
 import base64
-
+from sqlalchemy import select
 import pymysql
 from collections import ChainMap
 import uvicorn
@@ -28,8 +28,14 @@ conn = pymysql.connect(host="project-db-stu.ddns.net", port=3307, user='inho',
                        password='k123456789', db='inho', charset='utf8')
 cursor = conn.cursor(pymysql.cursors.DictCursor)
 ### 피클 자리##################################
-woman = pickle.load(open("tree_model_man.pkl", 'rb'))
-man = pickle.load(open("tree_model_woman.pkl", 'rb'))
+man_xg부스트_1 = pickle.load(open("tree_model_man.pkl", 'rb'))
+man_랜덤포레_2 = pickle.load(open("man_rf_clf.pkl", 'rb'))
+man_결정트리_3 = pickle.load(open("man_tree.pkl", 'rb'))
+
+
+woman_xg부스트_1 = pickle.load(open("tree_model_woman.pkl", 'rb'))
+woman_랜덤포레_2 = pickle.load(open("woman_rf_clf.pkl", 'rb'))
+woman_결정트리_3 = pickle.load(open("woman_tree.pkl", 'rb'))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -335,45 +341,50 @@ async def create_member(info: dict) -> dict:
     print(arr)
 
     if user성별=="m":
-        pred = man.predict(arr)
-        pred=pred.astype(int)
-        print(pred)
+        pred1 = man_xg부스트_1.predict(arr)
+        pred2 = man_랜덤포레_2.predict(arr)
+        pred3 = man_결정트리_3.predict(arr)
+
+
+        pred1=pred1.astype(int)
+        pred2=pred2.astype(int)
+        pred3=pred3.astype(int)
+        print(pred1)
+        print(pred2)
+        print(pred3)
+        회원1 = pred1[0]##### 문자열로변
+        회원2 = pred2[0]##### 문자열로변환
+        회원3 = pred3[0]##### 문자열로변환     
     else :
-        pred = woman.predict(arr)
-        pred=pred.astype(int)
-        print(pred)
+        pred1 = woman_xg부스트_1.predict(arr)
+        pred2 = woman_랜덤포레_2.predict(arr)
+        pred3 = woman_결정트리_3.predict(arr)
+        pred1=pred1.astype(int)
+        pred2=pred2.astype(int)
+        pred3=pred3.astype(int)
+        print(pred1)
+        print(pred2)
+        print(pred3)
 
-    회원1 = pred[0]##### 문자열로변환    
-###쿼리문#####@@@@@@@@@@@@@@@@@@@@@@@@
-    sql회원정보 = f"select * from t_members where mb_no='{회원1}'"
-    cursor.execute(query=sql회원정보)
-    result1 = cursor.fetchall()
-    디비정보 =result1
-    print(디비정보)
-    # DB를 리스트안에 딕셔너리로 빼오기
-    no_user =ChainMap(*디비정보)
-    sql회원이미지 = f"select * from t_image where img_no='{39}'" ### 일단 있는이미지 넣었음
-    cursor.execute(query=sql회원이미지)
-    result2 = cursor.fetchall()
-    디비이미지 =result2
-    print(디비이미지)
-    no_image =ChainMap(*디비이미지)
-   
+        회원=[pred1[0],pred2[0],pred3[0]]
+    ai=[]
+    for i in(회원):
+        meosin = session.query(t_member).filter(t_member.mb_no == i).first()
 
-    ### 리스트안 딕셔너리 데이터 찾을려고
- 
-    usernick = no_user['mb_no']
-    userregion = 지역()[no_user['mb_region']]
-    userjob = 직업()[no_user['mb_job']]
-    userimage1 = no_image['mb_image1']
+        meosinimg = session.query(t_image).filter(t_image.mb_no == i).first()
 
-    print(usernick)
-    print(userregion)
-    print(userjob)
-    print(userimage1)
-    
+        globals()["usernick"+str(i)] = meosin.mb_nickname
+        globals()["userregion"+str(i)] = 지역()[meosin.mb_region]
+        globals()["userjob "+str(i)] = 직업()[meosin.mb_job]
+        globals()["serimage1"+str(i)] = meosinimg.mb_image1
+        결과 = {'nickname': globals()["usernick"+str(i)] , 'region': globals()["userregion"+str(i)] , "job" : globals()["userjob "+str(i)] , "image" :globals()["serimage1"+str(i)]}
+        ai.append(결과)
 
-    return {'nickname': usernick, 'region': userregion , "job" : userjob , "image" : userimage1}  # 머신러닝 준비중
+    print(ai)
+        
+
+    return ai
+ # 머신러닝 준비중
 # 여기는 나중에 코드 줄여야겠당
 
 
@@ -685,9 +696,10 @@ async def put_user(info: dict):
 ################## 메인페이지 #################
 m="m"
 f="f"
-############################ 랜덤데이터 쏴주기 ~@#######################################
+# ############################ 랜덤데이터 쏴주기 ~@#######################################
 @app.post("/home")#### 여성이면 남성데이터 쏴주고 남성이면 남성데이터 쏴주기 ###################################
 async def create_user(info: dict) -> dict:
+   
     info["email"] = info["email"].replace('"', '', 2)
     # print(info["email"])## 현유저 이메일
     user22 = session.query(t_login).filter(
@@ -702,14 +714,17 @@ async def create_user(info: dict) -> dict:
 
     if 현사용자.mb_gender=="f":
         #메인회원정보s = f"select * from t_members order by mb_no desc limit 20"
+        
         메인회원정보s = f"select * from t_members where mb_gender='{m}'and mb_birthdate between {useragem10} and {useragep10} order by mb_no desc limit 20"
         cursor.execute(query=메인회원정보s)
         result1 = cursor.fetchall()
         메인디비정보 =result1
         # 메인디비정보[i]["mb_no"] ###############################이미지 디비 할려고##### 지우지마
         data = []
+        
         for i in range(0,20):
             globals()['usermbno'+str(i)] = 메인디비정보[i]["mb_no"]
+            
             globals()['userimg'+str(i)] = f"select * from t_image where mb_no='{globals()['usermbno'+str(i)] }'"
             # print(globals()['userimg'+str(i)])
             cursor.execute(query=globals()['userimg'+str(i)])
@@ -722,33 +737,35 @@ async def create_user(info: dict) -> dict:
             data.append(globals()['user_'+str(i)])
 
 
-        # 메인회원이미지 = f"select * from t_image where img_no='{39}'"
-        # cursor.execute(query=메인회원이미지)
-        # result2 = cursor.fetchall()
-        # 메인디비이미지 =result2
-        # print(메인디비이미지)
+        메인회원이미지 = f"select * from t_image where img_no='{39}'"
+        cursor.execute(query=메인회원이미지)
+        result2 = cursor.fetchall()
+        메인디비이미지 =result2
+        print(메인디비이미지)
             
         
     else :
         메인회원정보s = f"select * from t_members where mb_gender='{f}'and mb_birthdate between {useragem10} and {useragep10} order by mb_no desc limit 20"
-        cursor.execute(query=메인회원정보s)
+        cursor.execute(메인회원정보s)
         result1 = cursor.fetchall()
+        
+        
         메인디비정보 =result1
         # print(메인디비정보)
+        
+        
         for i in range(0,20):
-           
-           
-            globals()['usermbno'+str(i)] = 메인디비정보[i]["mb_no"]
-            globals()['userimg'+str(i)] = f"select * from t_image where mb_no='{globals()['usermbno'+str(i)] }'"
-            # print(globals()['userimg'+str(i)])
-            cursor.execute(query=globals()['userimg'+str(i)])
-            result2 = cursor.fetchall()
-            globals()['메인디비이미지'+str(i)] =result2
-            globals()['image'+str(i)] = (list(z['mb_image1'] for z in globals()['메인디비이미지'+str(i)]))
-            print(globals()['image'+str(i)])
+                globals()['usermbno'+str(i)] = 메인디비정보[i]["mb_no"]
+                globals()['userimg'+str(i)] = f"select * from t_image where mb_no='{globals()['usermbno'+str(i)] }'"
+                # print(globals()['userimg'+str(i)])
+                cursor.execute(query=globals()['userimg'+str(i)])
+                result2 = cursor.fetchall()
+                globals()['메인디비이미지'+str(i)] =result2
+                globals()['image'+str(i)] = (list(z['mb_image1'] for z in globals()['메인디비이미지'+str(i)]))
+                print(globals()['image'+str(i)])
 
-            globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)]}
-    
+                globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)]}
+   
 
     return user_0,user_1 ,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14,user_15,user_16,user_17
 
@@ -774,24 +791,29 @@ async def user(info: dict):
 
 @app.post("/like")
 async def like_user(info: dict):
+    
     info["email"] = info["email"].replace('"', '', 2)
     user = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
     u_mb_no = user.mb_no
-    # likeuser = session.query(t_like).filter(t_like.like_mb_no == u_mb_no).first()
+            
+    
+    you = t_member()
+    
+    
     # image = session.query(t_image).filter(t_image.like_mb_no == u_mb_no).first()
+    datalist=[]
+    img =session.query(t_like).filter(t_like.like_mb_no == u_mb_no).all()
+    for img1 in img:
+        # print(f"id: {img1.like_mb_no}  email: {img1.like_user_no}")
+        datalist.append([f"{img1.like_user_no}"]) 
+    print(datalist)
+    
 
-
-    curs = conn.cursor(pymysql.cursors.SSCursor)
-    sql = f"select l.like_user_no from t_members m, t_userlike l, t_logins s where s.mb_no = {u_mb_no} and s.mb_no = l.like_mb_no group by l.like_user_no "
-    curs.execute(sql)
-    rs = curs.fetchall()
-    rows = [list(rs[x]) for x in range(len(rs))]
-    rows[0][0]
     a = []
-    for i in range(len(rows)) :
-        user1 = session.query(t_member).filter(t_member.mb_no == rows[i][0]).first()
+    for i in range(len(datalist)) :
+        user1 = session.query(t_member).filter(t_member.mb_no == datalist[i][0]).first()
         # u_mb_no1 = user1.mb_no
-        image = session.query(t_image).filter(t_image.mb_no== rows[i][0]).first()
+        image = session.query(t_image).filter(t_image.mb_no== datalist[i][0]).first()
         globals()['user'+str(i)]={"nickname":user1.mb_nickname, "job": 직업()[user1.mb_job], "region" : 지역()[user1.mb_region],
                                   "married": 결혼유무()[user1.mb_marriage_yn], "marriagePlan" : 결혼계획()[user1.mb_marriage_plan],
                                   "image": image.mb_image1}
@@ -804,7 +826,6 @@ async def like_user(info: dict):
 
 
 
-    # if __name__ == '__main__':
-    #     uvicorn .run(app, host="0.0.0.0", port=8000)
-    #     pass
-
+#     # if __name__ == '__main__':
+#     #     uvicorn .run(app, host="0.0.0.0", port=8000)
+#     #     pass
