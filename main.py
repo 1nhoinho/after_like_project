@@ -28,14 +28,14 @@ conn = pymysql.connect(host="project-db-stu.ddns.net", port=3307, user='inho',
                        password='k123456789', db='inho', charset='utf8')
 cursor = conn.cursor(pymysql.cursors.DictCursor)
 ### 피클 자리##################################
-man_xg부스트_1 = pickle.load(open("C:/Users/gjaischool/Desktop/project2/404-project/tree_model_man.pkl", 'rb'))
-man_랜덤포레_2 = pickle.load(open("C:/Users/gjaischool/Desktop/project2/404-project/man_rf_clf.pkl", 'rb'))
-man_결정트리_3 = pickle.load(open("C:/Users/gjaischool/Desktop/project2/404-project/man_tree.pkl", 'rb'))
+man_xg부스트_1 = pickle.load(open("C:/PK/man_rf_clf.pkl", 'rb'))
+man_랜덤포레_2 = pickle.load(open("C:/PK/man_tree.pkl", 'rb'))
+man_결정트리_3 = pickle.load(open("C:/PK/tree_model_man.pkl", 'rb'))
 
 
-woman_xg부스트_1 = pickle.load(open("C:/Users/gjaischool/Desktop/project2/404-project/tree_model_woman.pkl", 'rb'))
-woman_랜덤포레_2 = pickle.load(open("C:/Users/gjaischool/Desktop/project2/404-project/woman_rf_clf.pkl", 'rb'))
-woman_결정트리_3 = pickle.load(open("C:/Users/gjaischool/Desktop/project2/404-project/woman_tree.pkl", 'rb'))
+woman_xg부스트_1 = pickle.load(open("C:/PK/tree_model_woman.pkl", 'rb'))
+woman_랜덤포레_2 = pickle.load(open("C:/PK/woman_rf_clf.pkl", 'rb'))
+woman_결정트리_3 = pickle.load(open("C:/PK/woman_tree.pkl", 'rb'))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
