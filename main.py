@@ -179,7 +179,7 @@ async def create_member(info: dict) -> dict:
     else :
         print("zz")
         return {"doubleCheck" : True}
-
+    
 
 # ------------------------상세정보 입력----------------------------------------------
 @app.put("/user-data-input")
@@ -382,6 +382,7 @@ async def create_member(info: dict) -> dict:
     print(ai)
     b= {'myName': user_nick}
     ai.append(b)
+    session.close()
 
     return ai 
  # 머신러닝 준비중
@@ -474,6 +475,7 @@ async def create_image(info: dict):
 
     session.add(i_user)
     session.commit()
+    session.close()
 
     del img_list[:]
     return {"isAuthenticated": True}
@@ -559,7 +561,7 @@ async def post_user(info: dict):
     user2 = user.mb_no
     u_image = session.query(t_image).filter(t_image.mb_no == user2).first()
     image1 = u_image.mb_image1
-    
+    session.close()
     return [{"nickname":nickname,"region": region,"job": job, "gender": gender, "style": style,
      "fashion": fashionlist, "character": characterlist,"introduce": profile, "wanted" : ideal, "image": image1}]
 
@@ -660,6 +662,7 @@ async def post_user(info: dict):
     image6 = img_list[5]
     print(i_list)
     print(img_list)
+    session.close()
     return [{"nickname": nickname, "gender": gender, "birth": birth, "region": region,
             "blood": blood, "health": health, "drink": drink, "smoke": smoke, "married": married,
              "married_plan": married_plan, "education": education, "job": job, "salary": salary, "introduce": profile, "wanted" : ideal,
@@ -690,6 +693,7 @@ async def put_user(info: dict):
     
     session.add(user)
     session.commit()
+    session.close()
 
     return "good"
 
@@ -745,6 +749,7 @@ async def create_user(info: dict) -> dict:
             a = a + 1
             if a == 15 :
                 break
+    session.close()
     return  user_0,user_1,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14
    
 
@@ -801,7 +806,7 @@ async def like_user(info: dict):
                                   "married": 결혼유무()[user1.mb_marriage_yn], "marriagePlan" : 결혼계획()[user1.mb_marriage_plan],
                                   "image": image.mb_image1}
         a.append(globals()['user'+str(i)])
-
+    session.close()
     return (a, {"loading" :True} if a else {"loading" :False})
 
 
@@ -851,6 +856,7 @@ async def like_user(info: dict):
                                   "married": 결혼유무()[user1.mb_marriage_yn], "marriagePlan" : 결혼계획()[user1.mb_marriage_plan],
                                   "image": image.mb_image1}
         a.append(globals()['user'+str(i)])    
+    session.close()
     return (a, {"loading" :True} if a else {"loading" :False}) 
 
 
