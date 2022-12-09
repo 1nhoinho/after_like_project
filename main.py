@@ -352,9 +352,8 @@ async def create_member(info: dict) -> dict:
         print(pred1)
         print(pred2)
         print(pred3)
-        회원1 = pred1[0]##### 문자열로변
-        회원2 = pred2[0]##### 문자열로변환
-        회원3 = pred3[0]##### 문자열로변환     
+
+        회원=[pred1[0],pred2[0],pred3[0]]    
     else :
         pred1 = woman_xg부스트_1.predict(arr)
         pred2 = woman_랜덤포레_2.predict(arr)
@@ -381,9 +380,10 @@ async def create_member(info: dict) -> dict:
         ai.append(결과)
 
     print(ai)
-        
+    b= {'myName': user_nick}
+    ai.append(b)
 
-    return ai ,{'myName': user_nick}
+    return ai 
  # 머신러닝 준비중
 # 여기는 나중에 코드 줄여야겠당
 
@@ -855,8 +855,44 @@ async def like_user(info: dict):
 
 
 ##### like 페이지에서 하트 보내기, 패스 기능
-# @app.put("/like")
-# async def like_user(info: dict):
+@app.put("/like")
+async def like_user(info: dict):
+    if info["like"] == 'True' :
+        info["email"] = info["email"].replace('"', '', 2)
+        현user = session.query(t_login).filter(t_login.mb_email == info["email"]).first()
+        당한  =   session.query(t_member).filter(t_member.mb_nickname == info["username"]).first()
+        현 = 현user.mb_no
+        당 = 당한.mb_no
+        abc = t_like()
+        abc.like_mb_no= 현
+        abc.like_user_no = 당
+        abc.unlike = 'False'
+        abc.like_time = time.localtime()
+    
+        session.add(abc)
+        session.commit()
+        session.close()
+    else :
+        pass
+    if info["unlike"] == 'True' :
+        info["email"] = info["email"].replace('"', '', 2)
+        member = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
+        u_mb_no = member.mb_no
+        user = session.query(t_member).filter(t_member.mb_nickname == info["username"]).first()
+        like_no = user.mb_no    
+        like = session.query(t_like).filter(and_(t_like.like_mb_no == u_mb_no ,t_like.like_user_no == like_no)).first()
+        if like.unlike == 'False':
+            like.unlike = "True"
+            # if like.unlike == None :
+            #     like.unlike = 'True'
+            print(like.unlike)
+            session.add(like)
+            session.commit()
+            session.close()
+    else :
+        pass
+
+
 
 
 
