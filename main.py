@@ -888,8 +888,19 @@ async def like_user(info: dict):
                                   "image": image.mb_image1}
         a.append(globals()['user'+str(i)])
 
+    return a
 
-    return a        
+
+     ###### 좋아요 보낸거 지우는 기능 #################
+@app.put("/user-setting/likeYou")
+async def like_user(info: dict):
+    info["email"] = info["email"].replace('"', '', 2)
+    member = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
+    u_mb_no = member.mb_no
+    like = session.query(t_like).filter(t_like.like_mb_no == u_mb_no).first()
+    user = session.query(t_member).filter(t_member.mb_nickname == info["username"]).first()
+
+        
 
 # 누구에게 좋아요 받았는지 확인하는 페이지
 @app.post("/like")
