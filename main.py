@@ -287,9 +287,9 @@ async def create_member(info: dict) -> dict:
     user = session.query(t_login).filter(
         (t_login.mb_email == info["email"])).first()
     user_no = user.mb_no
-    user_email = user.mb_email
     f_user = session.query(t_member).filter(
         t_member.mb_no == user_no).first()
+    user_nick = f_user.mb_nickname
    # 추천을 누른 회원의 데이터 정보 빼오기
     user성별 =f_user.mb_gender
     data1 = f_user.mb_no
@@ -383,7 +383,7 @@ async def create_member(info: dict) -> dict:
     print(ai)
         
 
-    return ai
+    return ai ,{'myName': user_nick}
  # 머신러닝 준비중
 # 여기는 나중에 코드 줄여야겠당
 
@@ -909,7 +909,6 @@ async def like_user(info: dict):
         session.add(like)
         session.commit()
         session.close()
-    
     
 
         
