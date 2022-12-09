@@ -697,85 +697,6 @@ async def put_user(info: dict):
 m="m"
 f="f"
 # ############################ 랜덤데이터 쏴주기 ~@#######################################
-# @app.post("/home")#### 여성이면 남성데이터 쏴주고 남성이면 남성데이터 쏴주기 ###################################
-# async def create_user(info: dict) -> dict:
-   
-#     info["email"] = info["email"].replace('"', '', 2)
-#     # print(info["email"])## 현유저 이메일
-#     user22 = session.query(t_login).filter(
-#         (t_login.mb_email == info["email"])).first()  # 단일 사용자
-#     userno=user22.mb_no 
-#     # print(userno) ## 현유저 넘버
-#     현사용자 = session.query(t_member).filter(
-#         (t_member.mb_no ==  userno)).first()  # 단일 사용자
-  
-#     useragem10 = int(현사용자.mb_birthdate)-10
-#     useragep10 = int(현사용자.mb_birthdate)+10
-
-#     if 현사용자.mb_gender=="f":
-#         #메인회원정보s = f"select * from t_members order by mb_no desc limit 20"
-        
-#         메인회원정보s = f"select * from t_members where mb_gender='{m}'and mb_birthdate between {useragem10} and {useragep10} order by mb_no desc limit 20"
-#         cursor.execute(query=메인회원정보s)
-#         result1 = cursor.fetchall()
-#         메인디비정보 =result1
-#         메인회원정보s = session.query(t_member).filter((t_member.mb_gender == 'm' and  useragem10 < t_member.mb_birthdate < useragep10)).first()  # 단일 사용자
-#         메인디비정보 = 메인회원정보s.mb_nickname
-#         # 메인디비정보[i]["mb_no"] ###############################이미지 디비 할려고##### 지우지마
-#         data = []
-        
-#         for i in range(0,20):
-#             globals()['usermbno'+str(i)] = 메인디비정보[i]["mb_no"]
-            
-#             globals()['userimg'+str(i)] = f"select * from t_image where mb_no='{globals()['usermbno'+str(i)] }'"
-#             # print(globals()['userimg'+str(i)])
-#             cursor.execute(query=globals()['userimg'+str(i)])
-#             result2 = cursor.fetchall()
-#             globals()['메인디비이미지'+str(i)] =result2
-#             globals()['image'+str(i)] = (list(z['mb_image1'] for z in globals()['메인디비이미지'+str(i)]))
-
-
-#             globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)]}
-#             data.append(globals()['user_'+str(i)])
-
-
-#         메인회원이미지 = f"select * from t_image where img_no='{39}'"
-#         cursor.execute(query=메인회원이미지)
-#         result2 = cursor.fetchall()
-#         메인디비이미지 =result2
-#         print(메인디비이미지)
-            
-        
-#     else :
-#         메인회원정보s = f"select * from t_members where mb_gender='{f}'and mb_birthdate between {useragem10} and {useragep10} order by mb_no desc limit 20"
-#         cursor.execute(메인회원정보s)
-#         result1 = cursor.fetchall()
-        
-        
-#         메인디비정보 =result1
-#         # print(메인디비정보)
-        
-        
-#         for i in range(0,20):
-#                 globals()['usermbno'+str(i)] = 메인디비정보[i]["mb_no"]
-#                 globals()['userimg'+str(i)] = f"select * from t_image where mb_no='{globals()['usermbno'+str(i)] }'"
-#                 # print(globals()['userimg'+str(i)])
-#                 cursor.execute(query=globals()['userimg'+str(i)])
-#                 result2 = cursor.fetchall()
-#                 globals()['메인디비이미지'+str(i)] =result2
-#                 globals()['image'+str(i)] = (list(z['mb_image1'] for z in globals()['메인디비이미지'+str(i)]))
-#                 print(globals()['image'+str(i)])
-
-#                 globals()['user_'+str(i)]={"nick" : 메인디비정보[i]["mb_nickname"],"birth": (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1),"region" : 지역()[메인디비정보[i]['mb_region']], "style" : 남자외모()[메인디비정보[i]["mb_style"]], "character" : 남자성격()[메인디비정보[i]['mb_character'][:1]] ,"profile":메인디비정보[i]['mb_profile'], "ideal":메인디비정보[i]['mb_ideal'], "image": globals()['image'+str(i)]}
-   
-
-#     return user_0,user_1 ,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14,user_15,user_16,user_17
-
-
-
-m="m"
-f="f"
-# ############################ 랜덤데이터 쏴주기 ~@#######################################
 @app.post("/home")#### 여성이면 남성데이터 쏴주고 남성이면 남성데이터 쏴주기 ###################################
 async def create_user(info: dict) -> dict:
    
@@ -825,15 +746,7 @@ async def create_user(info: dict) -> dict:
             if a == 15 :
                 break
     return  user_0,user_1,user_2,user_3,user_4,user_5,user_6,user_7,user_8,user_9,user_10,user_11,user_12,user_13,user_14
-
-# (datetime.today().year - int(메인디비정보[i]['mb_birthdate']) + 1)
-# datalist=[]
-#     img =session.query(t_like).filter(t_like.like_mb_no == u_mb_no).all()
-#     for img1 in img:
-#         # print(f"id: {img1.like_mb_no}  email: {img1.like_user_no}")
-#         datalist.append([f"{img1.like_user_no}"]) 
-#     print(datalist)
-    
+   
 
 
 # 메인페이지 좋아요 보내면 DB에 데이터 저장하기
@@ -944,6 +857,7 @@ async def like_user(info: dict):
 ##### like 페이지에서 하트 보내기, 패스 기능
 # @app.put("/like")
 # async def like_user(info: dict):
+
 
 
 
