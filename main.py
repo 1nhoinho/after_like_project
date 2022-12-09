@@ -802,7 +802,7 @@ async def like_user(info: dict):
                                   "image": image.mb_image1}
         a.append(globals()['user'+str(i)])
 
-    return (a, {"loading" :True} if a else {"loading" :False})
+    return a
 
 
      ###### 좋아요 보낸거 지우는 기능 #################
@@ -851,7 +851,7 @@ async def like_user(info: dict):
                                   "married": 결혼유무()[user1.mb_marriage_yn], "marriagePlan" : 결혼계획()[user1.mb_marriage_plan],
                                   "image": image.mb_image1}
         a.append(globals()['user'+str(i)])    
-    return (a, {"loading" :True} if a else {"loading" :False}) 
+    return a 
 
 
 ##### like 페이지에서 하트 보내기, 패스 기능
