@@ -849,6 +849,7 @@ async def user(info: dict):
     abc = t_like()
     abc.like_mb_no= 현
     abc.like_user_no = 당
+    abc.unlike = 'False'
     abc.like_time = time.localtime()
  
     session.add(abc)
@@ -871,7 +872,7 @@ async def like_user(info: dict):
     
     # image = session.query(t_image).filter(t_image.like_mb_no == u_mb_no).first()
     datalist=[]
-    img =session.query(t_like).filter(t_like.like_mb_no == u_mb_no).all()
+    img =session.query(t_like).filter(and_(t_like.like_mb_no == u_mb_no, t_like.unlike == 'False')).all()
     for img1 in img:
         # print(f"id: {img1.like_mb_no}  email: {img1.like_user_no}")
         datalist.append([f"{img1.like_user_no}"]) 
@@ -897,8 +898,18 @@ async def like_user(info: dict):
     info["email"] = info["email"].replace('"', '', 2)
     member = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
     u_mb_no = member.mb_no
-    like = session.query(t_like).filter(t_like.like_mb_no == u_mb_no).first()
     user = session.query(t_member).filter(t_member.mb_nickname == info["username"]).first()
+    like_no = user.mb_no    
+    like = session.query(t_like).filter(and_(t_like.like_mb_no == u_mb_no ,t_like.like_user_no == like_no)).first()
+    if like.unlike == 'False':
+        like.unlike = "True"
+        # if like.unlike == None :
+        #     like.unlike = 'True'
+        print(like.unlike)
+        session.add(like)
+        session.commit()
+        session.close()
+    
 
         
 
@@ -927,7 +938,7 @@ async def like_user(info: dict):
                                   "married": 결혼유무()[user1.mb_marriage_yn], "marriagePlan" : 결혼계획()[user1.mb_marriage_plan],
                                   "image": image.mb_image1}
         a.append(globals()['user'+str(i)])    
-    return a 
+    return a , {"Loading" : False}
 
 
 #     # if __name__ == '__main__':

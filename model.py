@@ -122,6 +122,7 @@ class t_like(Base):
     like_no = Column(Integer, primary_key=True)
     like_mb_no = Column(Integer,nullable=False)
     like_user_no = Column(Integer,nullable=False)
+    unlike = Column(String(10),nullable=False)
     like_time = Column(DateTime, nullable=False)
 
 # 좋아요 테이블 속성
@@ -129,6 +130,7 @@ class like(BaseModel):
     like_no = int
     like_mb_no = int
     like_user_no = int
+    unlike = str
     like_time = str
 
 
