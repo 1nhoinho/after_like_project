@@ -1,9 +1,8 @@
 FROM python:3.9.12
 
-WORKDIR /app/
-COPY . /app/
-COPY ../PK/ /app/
-COPY ./requirements.txt /app/
+WORKDIR /app
+COPY . /app
+COPY ./requirements.txt /app
 
 RUN pip install -r requirements.txt
 
