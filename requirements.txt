@@ -3,9 +3,9 @@ sqlalchemy
 fastapi
 asgi-cors-middleware
 python-time
-datatime
 jwt
 boto3
 pymysql
 scikit-learn
 uvicorn
+passlib
