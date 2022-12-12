@@ -715,18 +715,18 @@ async def create_user(info: dict) -> dict:
   
     useragem10 = int(현사용자.mb_birthdate)-10
     useragep10 = int(현사용자.mb_birthdate)+10
-    # print(useragem10)
-    # print(useragep10)
+    print(useragem10)
+    print(useragep10)
     li = []
     a = 0
     for i in range(useragem10,useragep10):
         li.append(i)
-    # print(li)
+    print(li)
     if 현사용자.mb_gender == 'm' :
         메인회원정보s = session.query(t_member).filter(t_member.mb_gender == 'f').order_by(t_member.mb_no.desc()).all()
         useragem10 < int(현사용자.mb_birthdate) < useragep10
         for i in 메인회원정보s:
-            if int(i.mb_birthdate) in li:
+            if int(i.mb_birthdate) :
                 메인회원이미지 = session.query(t_image).filter(t_image.mb_no == i.mb_no).first()
                 image = 메인회원이미지.mb_image1
                 cha = i.mb_character.split(",")[0]
@@ -744,16 +744,13 @@ async def create_user(info: dict) -> dict:
         # fashion = 남자외모()[메인회원정보s.mb_fashion]
         # 메인디비정보 = 메인회원정보s.mb_nickname
         for i in 메인회원정보s:
-            if int(i.mb_birthdate) in li:
-                메인회원이미지 = session.query(t_image).filter(t_image.mb_no == i.mb_no).first()
-                image = 메인회원이미지.mb_image1
-                cha = i.mb_character.split(",")[0]
-                character = 남자성격()[cha]
-                # li.append([f"{i.mb_nickname}",f"{datetime.today().year - int(i.mb_birthdate) + 1}", f"{지역()[i.mb_region]}",f"{여자외모()[i.mb_style]}",f"{character}", f"{i.mb_profile}", f"{i.mb_ideal}", f"{메인회원이미지.mb_image1}"])
-                globals()['user_'+str(a)]= {"nick":f"{i.mb_nickname}", "birth":datetime.today().year - int(i.mb_birthdate) + 1, "region": f"{지역()[i.mb_region]}", "style" : f"{남자외모()[i.mb_style]}", "character":f"{character}", "profile":f"{i.mb_profile}", "ideal": f"{i.mb_ideal}","image":[f"{image}"] }
-                a = a + 1
-            else :
-                pass
+            메인회원이미지 = session.query(t_image).filter(t_image.mb_no == i.mb_no).first()
+            image = 메인회원이미지.mb_image1
+            cha = i.mb_character.split(",")[0]
+            character = 남자성격()[cha]
+            # li.append([f"{i.mb_nickname}",f"{datetime.today().year - int(i.mb_birthdate) + 1}", f"{지역()[i.mb_region]}",f"{여자외모()[i.mb_style]}",f"{character}", f"{i.mb_profile}", f"{i.mb_ideal}", f"{메인회원이미지.mb_image1}"])
+            globals()['user_'+str(a)]= {"nick":f"{i.mb_nickname}", "birth":datetime.today().year - int(i.mb_birthdate) + 1, "region": f"{지역()[i.mb_region]}", "style" : f"{남자외모()[i.mb_style]}", "character":f"{character}", "profile":f"{i.mb_profile}", "ideal": f"{i.mb_ideal}","image":[f"{image}"] }
+            a = a + 1
             if a == 15 :
                 break
     session.close()
@@ -845,14 +842,15 @@ async def like_user(info: dict):
 
     info["email"] = info["email"].replace('"', '', 2)
     user = session.query(t_member).filter(t_member.mb_email == info["email"]).first()
-    u_mb_no = user.mb_no # 내꺼
+    u_mb_no = user.mb_no
 
     # image = session.query(t_image).filter(t_image.like_mb_no == u_mb_no).first()
-    datalist=[]                                  #상대방
-    img =session.query(t_like).filter(and_(t_like.like_mb_no == u_mb_no, t_like.unlike == 'False')).all()
+    datalist=[]
+    img =session.query(t_like).filter(t_like.like_user_no == u_mb_no).all()
     for img1 in img:
         # print(f"id: {img1.like_mb_no}  email: {img1.like_user_no}")
-        datalist.append([f"{img1.like_user_no}"]) 
+        datalist.append([f"{img1.like_mb_no}"]) 
+    print(datalist)
 
     a = []
     for i in range(len(datalist)) :
@@ -898,9 +896,9 @@ async def like_user(info: dict):
     elif info["like"]==True :
             abc=t_like()
             abc.unlike = "False"
-            abc.like_mb_no = user.mb_no
+            abc.like_mb_no = 현
             # print(당)
-            abc.like_user_no = 현
+            abc.like_user_no = user.mb_no
             
             abc.like_time = time.localtime()
         
