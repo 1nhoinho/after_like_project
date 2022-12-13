@@ -28,14 +28,14 @@ conn = pymysql.connect(host="project-db-stu.ddns.net", port=3307, user='inho',
                        password='k123456789', db='inho', charset='utf8')
 cursor = conn.cursor(pymysql.cursors.DictCursor)
 ### 피클 자리##################################
-man_xg부스트_1 = pickle.load(open("C:/PK/man_rf_clf.pkl", 'rb'))
-man_랜덤포레_2 = pickle.load(open("C:/PK/man_tree.pkl", 'rb'))
-man_결정트리_3 = pickle.load(open("C:/PK/tree_model_man.pkl", 'rb'))
+man_xg부스트_1 = pickle.load(open("C:\man_svm.pkl", 'rb'))
+man_랜덤포레_2 = pickle.load(open("C:\man_cos_tree.pkl", 'rb'))
+man_결정트리_3 = pickle.load(open("C:\man_cos_rf.pkl", 'rb'))
 
 
-woman_xg부스트_1 = pickle.load(open("C:/PK/tree_model_woman.pkl", 'rb'))
-woman_랜덤포레_2 = pickle.load(open("C:/PK/woman_rf_clf.pkl", 'rb'))
-woman_결정트리_3 = pickle.load(open("C:/PK/woman_tree.pkl", 'rb'))
+woman_xg부스트_1 = pickle.load(open("C:\woman_cos_svm.pkl", 'rb'))
+woman_랜덤포레_2 = pickle.load(open("C:\woman_cos_rf.pkl", 'rb'))
+woman_결정트리_3 = pickle.load(open("C:\woman_cos_tree.pkl", 'rb'))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -724,9 +724,8 @@ async def create_user(info: dict) -> dict:
     print(li)
     if 현사용자.mb_gender == 'm' :
         메인회원정보s = session.query(t_member).filter(t_member.mb_gender == 'f').order_by(t_member.mb_no.desc()).all()
-        useragem10 < int(현사용자.mb_birthdate) < useragep10
         for i in 메인회원정보s:
-            if int(i.mb_birthdate) :
+            if int(i.mb_birthdate) in li :
                 메인회원이미지 = session.query(t_image).filter(t_image.mb_no == i.mb_no).first()
                 image = 메인회원이미지.mb_image1
                 cha = i.mb_character.split(",")[0]
@@ -738,19 +737,22 @@ async def create_user(info: dict) -> dict:
             if a == 15 :
                 break
     else :
-        메인회원정보s = session.query(t_member).filter(and_(t_member.mb_gender == 'm', useragem10 < int(현사용자.mb_birthdate) < useragep10)).order_by(t_member.mb_no.desc()).all()
+        메인회원정보s = session.query(t_member).filter(t_member.mb_gender == 'm').order_by(t_member.mb_no.desc()).all()
         # 정보 = sqlalchemy.sql.expression.desc(메인회원정보s.mb_no)
         # fashion = 메인회원정보s.mb_fashion.split(",")[0]
         # fashion = 남자외모()[메인회원정보s.mb_fashion]
         # 메인디비정보 = 메인회원정보s.mb_nickname
         for i in 메인회원정보s:
-            메인회원이미지 = session.query(t_image).filter(t_image.mb_no == i.mb_no).first()
-            image = 메인회원이미지.mb_image1
-            cha = i.mb_character.split(",")[0]
-            character = 남자성격()[cha]
-            # li.append([f"{i.mb_nickname}",f"{datetime.today().year - int(i.mb_birthdate) + 1}", f"{지역()[i.mb_region]}",f"{여자외모()[i.mb_style]}",f"{character}", f"{i.mb_profile}", f"{i.mb_ideal}", f"{메인회원이미지.mb_image1}"])
-            globals()['user_'+str(a)]= {"nick":f"{i.mb_nickname}", "birth":datetime.today().year - int(i.mb_birthdate) + 1, "region": f"{지역()[i.mb_region]}", "style" : f"{남자외모()[i.mb_style]}", "character":f"{character}", "profile":f"{i.mb_profile}", "ideal": f"{i.mb_ideal}","image":[f"{image}"] }
-            a = a + 1
+            if int(i.mb_birthdate) in li :
+                메인회원이미지 = session.query(t_image).filter(t_image.mb_no == i.mb_no).first()
+                image = 메인회원이미지.mb_image1
+                cha = i.mb_character.split(",")[0]
+                character = 남자성격()[cha]
+                # li.append([f"{i.mb_nickname}",f"{datetime.today().year - int(i.mb_birthdate) + 1}", f"{지역()[i.mb_region]}",f"{여자외모()[i.mb_style]}",f"{character}", f"{i.mb_profile}", f"{i.mb_ideal}", f"{메인회원이미지.mb_image1}"])
+                globals()['user_'+str(a)]= {"nick":f"{i.mb_nickname}", "birth":datetime.today().year - int(i.mb_birthdate) + 1, "region": f"{지역()[i.mb_region]}", "style" : f"{남자외모()[i.mb_style]}", "character":f"{character}", "profile":f"{i.mb_profile}", "ideal": f"{i.mb_ideal}","image":[f"{image}"] }
+                a = a + 1
+            else: 
+                pass
             if a == 15 :
                 break
     session.close()
@@ -850,7 +852,6 @@ async def like_user(info: dict):
     for img1 in img:
         # print(f"id: {img1.like_mb_no}  email: {img1.like_user_no}")
         datalist.append([f"{img1.like_mb_no}"]) 
-    print(datalist)
 
     a = []
     for i in range(len(datalist)) :
